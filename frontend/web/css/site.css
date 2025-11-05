@@ -101,3 +101,65 @@ a.desc:after {
 {
     text-decoration: none;
 }
+
+.navbar-nav a,
+.navbar-nav button {
+    color: #212529;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.navbar-nav a:hover,
+.navbar-nav button:hover {
+    color: var(--bs-secondary) !important;
+}
+
+.navbar-nav i {
+    transition: color 0.3s ease;
+}
+
+.navbar-nav a:hover i,
+.navbar-nav button:hover i {
+    color: var(--bs-secondary) !important;
+}
+
+.navbar-nav .btn-link.nav-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0 0 0 8px;
+    color: #212529;
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    vertical-align: middle;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .btn-link.nav-link:hover {
+    color: var(--bs-secondary) !important;
+}
+
+.navbar-nav .nav-link.disabled {
+    opacity: 0.8;
+    cursor: default;
+    color: #6c757d !important;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.navbar-nav .nav-link.active {
+    color: var(--bs-secondary) !important;
+    font-weight: 600;
+}
+
+.navbar-nav a,
+.navbar-nav button,
+.navbar-nav i {
+    transition: color 0.25s ease-in-out;
+}
+
+
