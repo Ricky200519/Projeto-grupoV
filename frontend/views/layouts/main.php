@@ -36,7 +36,6 @@ AppAsset::register($this);
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
 
-
         <link href="../../web/css/style.css" rel="stylesheet">
         <link href="../../web/css/bootstrap.min.css" rel="stylesheet">
 
@@ -64,24 +63,25 @@ AppAsset::register($this);
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-auto py-0">
                         <a href="<?= Url::toRoute(['site/index']) ?>"
-                           class="nav-item nav-link <?= $currentAction == 'index' ? 'active' : '' ?>">Home</a>
+                           class="nav-item nav-link text-white <?= $currentAction == 'index' ? 'active' : '' ?>">Home</a>
                         <a href="<?= Url::toRoute(['site/about']) ?>"
-                           class="nav-item nav-link <?= $currentAction == 'about' ? 'active' : '' ?>">About</a>
-                        <a href="service.html" class="nav-item nav-link">My Quizzes</a>
+                           class="nav-item nav-link text-white <?=$currentAction == 'about' ? 'active' : '' ?>">About</a>
+                        <a href="service.html" class="nav-item nav-link text-white">My Quizzes</a>
                         <a href="<?= Url::toRoute(['site/contact']) ?>"
-                           class="nav-item nav-link <?= $currentAction == 'contact' ? 'active' : '' ?>">Contact Us</a>
+                           class="nav-item nav-link text-white <?= $currentAction == 'contact' ? 'active' : '' ?>">Contact
+                            Us</a>
 
                         <?php if (Yii::$app->user->isGuest): ?>
                             <a href="<?= Url::toRoute(['site/login']) ?>"
-                               class="nav-item nav-link <?= $currentAction == 'login' ? 'active' : '' ?>">
+                               class="nav-item nav-link text-white <?= $currentAction == 'login' ? 'active' : '' ?>">
                                 <i class="fa fa-sign-in-alt text-primary me-2"></i>Login
                             </a>
                             <a href="<?= Url::toRoute(['site/signup']) ?>"
-                               class="nav-item nav-link <?= $currentAction == 'signup' ? 'active' : '' ?>">
+                               class="nav-item nav-link text-white <?= $currentAction == 'signup' ? 'active' : '' ?>">
                                 <i class="fa fa-user text-primary me-2"></i>Register
                             </a>
                         <?php else: ?>
-                            <span class="nav-item nav-link disabled fw-bold d-inline-flex align-items-center">
+                            <span class="nav-item nav-link disabled fw-bold d-inline-flex align-items-center text-white">
                         <i class="fa fa-user text-primary me-2"></i>
                         <?= Html::encode(Yii::$app->user->identity->username) ?>
                     </span>
@@ -89,7 +89,7 @@ AppAsset::register($this);
                             <div class="nav-item">
                                 <?= Html::beginForm(['site/logout'], 'post', ['class' => 'd-inline']) ?>
                                 <button type="submit"
-                                        class="nav-item nav-link btn btn-link text-dark d-inline-flex align-items-center">
+                                        class="nav-item nav-link btn btn-link text-dark d-inline-flex align-items-center text-white">
                                     <i class="fa fa-sign-out-alt text-primary me-2"></i>Logout
                                 </button>
                                 <?= Html::endForm() ?>
