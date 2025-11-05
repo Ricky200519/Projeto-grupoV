@@ -35,14 +35,11 @@ AppAsset::register($this);
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
-        <!-- Libraries Stylesheet -->
-        <link rel="stylesheet" href="lib/animate/animate.min.css"/>
-        <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet">
-        <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
 
 
-        <link href="../../web/css/bootstrap.min.css" rel="stylesheet">
         <link href="../../web/css/style.css" rel="stylesheet">
+        <link href="../../web/css/bootstrap.min.css" rel="stylesheet">
+
 
     </head>
     <body class="d-flex flex-column h-100">
@@ -55,7 +52,7 @@ AppAsset::register($this);
         ?>
 
         <div class="container-fluid position-relative p-0">
-            <nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light px-4 px-lg-5 py-3 py-lg-0 fixed-top">
                 <a href="<?= Url::toRoute(['site/index']) ?>" class="navbar-brand p-0">
                     <h1 class="text-primary"><i class="fas fa-graduation-cap me-3"></i>LearnQuiz</h1>
                 </a>
@@ -70,7 +67,7 @@ AppAsset::register($this);
                            class="nav-item nav-link <?= $currentAction == 'index' ? 'active' : '' ?>">Home</a>
                         <a href="<?= Url::toRoute(['site/about']) ?>"
                            class="nav-item nav-link <?= $currentAction == 'about' ? 'active' : '' ?>">About</a>
-                        <a href="service.html" class="nav-item nav-link">Services</a>
+                        <a href="service.html" class="nav-item nav-link">My Quizzes</a>
                         <a href="<?= Url::toRoute(['site/contact']) ?>"
                            class="nav-item nav-link <?= $currentAction == 'contact' ? 'active' : '' ?>">Contact Us</a>
 
@@ -107,18 +104,11 @@ AppAsset::register($this);
     </header>
     <main role="main" class="flex-shrink-0">
         <div class="container">
-
+            <br>
             <?= Alert::widget() ?>
             <?= $content ?>
         </div>
     </main>
-
-    <footer class="footer mt-auto py-3 text-muted">
-        <div class="container">
-            <p class="float-start">&copy; <?= Html::encode(Yii::$app->name) ?> <?= date('Y') ?></p>
-            <p class="float-end"><?= Yii::powered() ?></p>
-        </div>
-    </footer>
 
     <?php $this->endBody() ?>
     <script src="../../web/js/main.js"></script>
