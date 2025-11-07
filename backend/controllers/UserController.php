@@ -13,8 +13,7 @@ class UserController extends Controller
     public function beforeAction($action)
     {
         // 🔒 Só admin pode aceder a gestão de utilizadores
-        if (!Yii::$app->user->can('admin') && in_array($action->id, ['index', 'view', 'delete'])) {
-            // Vamos usar sessão para passar a mensagem
+        if (!Yii::$app->user->can('admin') && in_array($action->id, ['index', 'view', 'delete', 'create'])) {
             Yii::$app->session->set('accessDeniedMessage', 'Não tem permissões para gerir utilizadores. Apenas administradores podem aceder a esta funcionalidade.');
             return $this->redirect(['/site/index']);
         }
@@ -30,6 +29,48 @@ class UserController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionCreate()
+    {
+        $model = new User();
+        $model->scenario = 'create';
+
+        if ($model->load(Yii::$app->request->post())) {
+            // Definir password e auth key
+            $model->setPassword($model->password);
+            $model->generateAuthKey();
+            $model->generateEmailVerificationToken();
+            $model->status = User::STATUS_ACTIVE;
+
+            if ($model->save()) {
+                // 🔽 ATRIBUIÇÃO DIRETA DA ROLE (como no exemplo)
+                $roleName = Yii::$app->request->post('role', 'participante');
+
+                // Garantir que apenas roles permitidas são atribuídas
+                if (in_array($roleName, ['moderador', 'participante'])) {
+                    $auth = Yii::$app->authManager;
+                    $role = $auth->getRole($roleName);
+
+                    if ($role) {
+                        $auth->assign($role, $model->id);
+                    }
+                }
+
+                Yii::$app->session->setFlash('success',
+                    "Utilizador <strong>{$model->username}</strong> criado com sucesso com role <strong>{$roleName}</strong>!"
+                );
+                return $this->redirect(['index']);
+            } else {
+                Yii::$app->session->setFlash('error',
+                    "Erro ao criar utilizador: " . implode(', ', $model->getFirstErrors())
+                );
+            }
+        }
+
+        return $this->render('create', [
+            'model' => $model,
         ]);
     }
 

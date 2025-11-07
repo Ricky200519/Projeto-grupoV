@@ -15,6 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="card-header">
                 <h3 class="card-title"><?= Html::encode($this->title) ?></h3>
                 <div class="card-tools">
+                    <?= Html::a('<i class="fas fa-plus"></i> Criar Utilizador', ['create'], ['class' => 'btn btn-sm btn-success mr-2']) ?>
                     <?= Html::a('<i class="fas fa-sync-alt"></i> Recarregar', ['index'], ['class' => 'btn btn-sm btn-default']) ?>
                 </div>
             </div>
