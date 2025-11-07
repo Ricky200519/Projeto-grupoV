@@ -57,9 +57,48 @@ class LoginForm extends Model
     public function login()
     {
         if ($this->validate()) {
+            // Verificar se é tentativa de login no backend
+            if (Yii::$app->id === 'app-backend') {
+                $user = $this->getUser();
+
+                // Verificar se o utilizador tem permissão para aceder ao backend
+                if (!$this->hasBackendAccess($user)) {
+                    $this->addError('password', 'Não tem permissões para aceder ao backend. Apenas administradores e moderadores podem aceder.');
+                    return false;
+                }
+            }
+
             return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
         }
-        
+
+        return false;
+    }
+
+    /**
+     * Verifica se o utilizador tem permissão para aceder ao backend
+     *
+     * @param User|null $user
+     * @return bool
+     */
+    protected function hasBackendAccess($user)
+    {
+        if (!$user) {
+            return false;
+        }
+
+        // Verificar roles do utilizador
+        $auth = Yii::$app->authManager;
+        $userRoles = $auth->getRolesByUser($user->id);
+
+        // Lista de roles permitidas no backend
+        $allowedRoles = ['admin', 'moderador'];
+
+        foreach ($userRoles as $role) {
+            if (in_array($role->name, $allowedRoles)) {
+                return true;
+            }
+        }
+
         return false;
     }
 

@@ -13,6 +13,9 @@ return [
     'bootstrap' => ['log'],
     'modules' => [],
     'components' => [
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+        ],
         'request' => [
             'csrfParam' => '_csrf-backend',
         ],
@@ -45,6 +48,23 @@ return [
             ],
         ],
 
+        'view' => [
+            'theme' => [
+                'pathMap' => [
+                    '@vendor/hail812/yii2-adminlte3/src/views' => '@backend/views'
+                ],
+            ],
+        ],
+    ],
+    'as access' => [
+        'class' => 'yii\filters\AccessControl',
+        'except' => ['site/login', 'site/error', 'site/logout'],
+        'rules' => [
+            [
+                'allow' => true,
+                'roles' => ['admin', 'moderador'], // Apenas admin e moderador podem aceder ao backend
+            ],
+        ],
     ],
     'params' => $params,
 ];
