@@ -2,20 +2,17 @@
 
 namespace backend\controllers;
 
-use common\models\LoginForm;
 use Yii;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
+use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use common\models\LoginForm;
 
-/**
- * Site controller
- */
 class SiteController extends Controller
 {
     /**
-     * {@inheritdoc}
+     * Comportamentos de acesso e métodos HTTP permitidos.
      */
     public function behaviors()
     {
@@ -23,14 +20,17 @@ class SiteController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
+                    // Login e erro acessíveis a visitantes
                     [
                         'actions' => ['login', 'error'],
                         'allow' => true,
+                        'roles' => ['?'],
                     ],
+                    // Logout e index acessíveis apenas a administradores e moderadores
                     [
                         'actions' => ['logout', 'index'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['admin', 'moderador'],
                     ],
                 ],
             ],
@@ -44,7 +44,7 @@ class SiteController extends Controller
     }
 
     /**
-     * {@inheritdoc}
+     * Ações personalizadas.
      */
     public function actions()
     {
@@ -56,31 +56,66 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays homepage.
-     *
-     * @return string
+     * Página inicial do backend.
      */
     public function actionIndex()
     {
+        // Verificação de segurança adicional
+        if (!Yii::$app->user->can('admin') && !Yii::$app->user->can('moderador')) {
+            Yii::$app->user->logout();
+            return $this->redirect(['site/login']);
+        }
+
+        // Verificar se há mensagem de acesso negado na sessão
+        $accessDeniedMessage = Yii::$app->session->get('accessDeniedMessage');
+        if ($accessDeniedMessage) {
+            // Limpar a mensagem da sessão após usar
+            Yii::$app->session->remove('accessDeniedMessage');
+
+            return $this->render('index', [
+                'accessDenied' => true,
+                'accessDeniedMessage' => $accessDeniedMessage
+            ]);
+        }
+
         return $this->render('index');
     }
 
     /**
-     * Login action.
-     *
-     * @return string|Response
+     * Página de login.
      */
     public function actionLogin()
     {
+        // Se o utilizador já está autenticado, redirecionar para o painel
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            return $this->redirect(['index']);
         }
 
-        $this->layout = 'blank';
+        // Usar layout de login simples
+        $this->layout = 'main-login';
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->login()) {
+                // Verificar permissões de backend
+                if (Yii::$app->user->can('admin') || Yii::$app->user->can('moderador')) {
+                    return $this->redirect(['index']);
+                } else {
+                    // Não tem permissão - fazer logout e mostrar erro
+                    Yii::$app->user->logout();
+                    Yii::$app->session->setFlash('error',
+                        '<strong>Acesso Negado</strong><br>
+                        Não tem permissões para aceder ao backend. 
+                        Apenas administradores e moderadores podem aceder a esta área.'
+                    );
+                }
+            } else {
+                // Erro de login normal (credenciais inválidas)
+                Yii::$app->session->setFlash('error',
+                    'Username ou password incorretos. Por favor, tente novamente.'
+                );
+            }
         }
 
         $model->password = '';
@@ -91,14 +126,11 @@ class SiteController extends Controller
     }
 
     /**
-     * Logout action.
-     *
-     * @return Response
+     * Termina a sessão e redireciona para o login.
      */
     public function actionLogout()
     {
         Yii::$app->user->logout();
-
-        return $this->goHome();
+        return $this->redirect(['login']);
     }
 }

@@ -1,53 +1,82 @@
 <?php
 
 /** @var yii\web\View $this */
+/** @var bool $accessDenied */
+/** @var string $accessDeniedMessage */
 
-$this->title = 'My Yii Application';
+$this->title = 'Painel Admin - LearnQuiz';
 ?>
 <div class="site-index">
-
-    <div class="jumbotron text-center bg-transparent">
-        <h1 class="display-4">Congratulations!</h1>
-
-        <p class="lead">You have successfully created your Yii-powered application.</p>
-
-        <p><a class="btn btn-lg btn-success" href="https://www.yiiframework.com">Get started with Yii</a></p>
-    </div>
-
-    <div class="body-content">
-
-        <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="https://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="https://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="https://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
+    <!-- Alerta JavaScript para acesso negado -->
+    <?php if (isset($accessDenied) && $accessDenied): ?>
+        <div id="access-denied-alert" class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h5 class="alert-heading mb-2">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Acesso Restrito
+                    </h5>
+                    <p class="mb-0">
+                        <?= $accessDeniedMessage ?>
+                    </p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </div>
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Focar no alerta e fazer scroll suave
+                const alert = document.getElementById('access-denied-alert');
+                if (alert) {
+                    alert.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+
+                    setTimeout(() => {
+                        if (alert && alert.parentNode) {
+                            alert.remove();
+                        }
+                    }, 6000);
+                }
+            });
+        </script>
+    <?php endif; ?>
+
+    <div class="jumbotron text-center bg-transparent">
+        <h1 class="display-4" style="color: #00bfff;">Bem-vindo ao LearnQuiz!</h1>
+        <p class="lead" style="color: #ccc;">Sistema de gestão de quizzes educacionais</p>
+
+        <div class="row mt-5">
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-3x mb-3" style="color: #00bfff;"></i>
+                        <h5 style="color: #f5f5f5;">Utilizadores</h5>
+                        <p style="color: #ccc;">Gerir contas e permissões</p>
+                        <a href="<?= \yii\helpers\Url::to(['/user/index']) ?>" class="btn btn-primary">Gerir Utilizadores</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-question-circle fa-3x mb-3" style="color: #28a745;"></i>
+                        <h5 style="color: #f5f5f5;">Quizzes</h5>
+                        <p style="color: #ccc;">Criar e gerir questionários</p>
+                        <a href="#" class="btn btn-success">Gerir Quizzes</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-bar fa-3x mb-3" style="color: #ffc107;"></i>
+                        <h5 style="color: #f5f5f5;">Estatísticas</h5>
+                        <p style="color: #ccc;">Ver relatórios e métricas</p>
+                        <a href="#" class="btn btn-warning">Ver Estatísticas</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

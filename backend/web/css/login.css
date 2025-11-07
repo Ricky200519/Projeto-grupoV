@@ -1,0 +1,306 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@300;400;600;700&display=swap');
+
+/* ===== RESET E CONFIGURAÇÕES GERAIS ===== */
+.login-page {
+    background: linear-gradient(135deg, #2c8c56 0%, #38a36a 50%, #2c8c56 100%);
+    color: #1a1a1a;
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.login-container {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+}
+
+/* ===== CAIXA PRINCIPAL ===== */
+.login-box {
+    width: 100%;
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== CABEÇALHO E LOGO ===== */
+.login-header {
+    margin-bottom: 2rem;
+}
+
+.login-logo {
+    text-align: center;
+}
+
+.login-title {
+    color: #ffffff;
+    font-family: 'Fredoka One', cursive;
+    font-weight: 400;
+    font-size: 2.8rem;
+    margin: 0;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+}
+
+.login-title i {
+    color: #fff;
+    font-size: 2.5rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.login-title:hover {
+    transform: scale(1.02);
+    text-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== CARTÃO DO FORMULÁRIO ===== */
+.login-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: none;
+    box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.15),
+            0 4px 12px rgba(46, 139, 87, 0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.login-card:hover {
+    transform: translateY(-5px);
+    box-shadow:
+            0 15px 40px rgba(0, 0, 0, 0.2),
+            0 8px 20px rgba(46, 139, 87, 0.15);
+}
+
+.login-body {
+    padding: 2.5rem;
+    background: #ffffff;
+}
+
+/* ===== TÍTULOS E TEXTOS ===== */
+.login-subtitle {
+    color: #155d38;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    letter-spacing: -0.5px;
+}
+
+.login-description {
+    color: #5a6c7d;
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+/* ===== FORMULÁRIO E INPUTS ===== */
+.form-group-custom {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.form-label-custom {
+    color: #155d38;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.login-input {
+    background: #f8fff8;
+    border: 2px solid #e0f0e5;
+    border-radius: 12px;
+    color: #1a1a1a;
+    font-size: 1rem;
+    padding: 1rem 0.75rem;
+    height: auto;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.login-input::placeholder {
+    color: #8fa89e;
+    font-weight: 400;
+    opacity: 0.7;
+}
+
+.login-input:focus {
+    background: #ffffff;
+    border-color: #2e8b57;
+    box-shadow:
+            0 0 0 0.25rem rgba(46, 139, 87, 0.15),
+            inset 0 0 0 1px rgba(46, 139, 87, 0.1);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.login-input:focus::placeholder {
+    opacity: 0.4;
+}
+
+/* Labels normais (não flutuantes) */
+.form-label-custom {
+    color: #155d38;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* ===== BOTÃO ENTRAR ===== */
+.login-btn {
+    background: linear-gradient(135deg, #2e8b57 0%, #3cb371 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow:
+            0 4px 12px rgba(46, 139, 87, 0.3),
+            0 2px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-btn:hover {
+    background: linear-gradient(135deg, #256c46 0%, #2e8b57 100%);
+    transform: translateY(-2px);
+    box-shadow:
+            0 8px 20px rgba(46, 139, 87, 0.4),
+            0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+    box-shadow:
+            0 2px 8px rgba(46, 139, 87, 0.3),
+            0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Efeito de brilho no hover */
+.login-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.login-btn:hover::after {
+    left: 100%;
+}
+
+/* ===== ESTADOS DE ERRO ===== */
+.has-error .login-input {
+    border-color: #dc3545;
+    background: #fff5f5;
+}
+
+.has-error .login-input:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.15);
+}
+
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    font-weight: 600;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 576px) {
+    .login-container {
+        padding: 15px;
+        max-width: 100%;
+    }
+
+    .login-body {
+        padding: 2rem 1.5rem;
+    }
+
+    .login-title {
+        font-size: 2.2rem;
+    }
+
+    .login-title i {
+        font-size: 2rem;
+    }
+
+    .login-subtitle {
+        font-size: 1.3rem;
+    }
+
+    .login-description {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .login-body {
+        padding: 1.5rem 1rem;
+    }
+
+    .login-title {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* ===== ANIMAÇÕES EXTRAS ===== */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.login-card:focus-within {
+    animation: pulse 2s infinite;
+}
+
+/* Remove qualquer estilo de form-floating que possa interferir */
+.form-floating {
+    display: none;
+}
+
