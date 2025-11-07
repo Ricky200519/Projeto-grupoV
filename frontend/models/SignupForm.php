@@ -45,18 +45,25 @@ class SignupForm extends Model
      */
     public function signup()
     {
-        if ($this->validate()) {
-            $user = new User();
-            $user->username = $this->username;
-            $user->email = $this->email;
-            $user->setPassword($this->password);
-            $user->generateAuthKey();
-            $user->save(false);
+        if (!$this->validate()) {
+            return null;
+        }
 
-            // the following three lines were added:
+        $user = new User();
+        $user->username = $this->username;
+        $user->email = $this->email;
+        $user->setPassword($this->password);
+        $user->generateAuthKey();
+        $user->generateEmailVerificationToken();
+
+        if ($user->save()) {
+            // 🔽 CORREÇÃO: Atribuir role 'participante' em vez de 'author'
             $auth = \Yii::$app->authManager;
-            $authorRole = $auth->getRole('author');
-            $auth->assign($authorRole, $user->getId());
+            $participanteRole = $auth->getRole('participante');
+
+            if ($participanteRole) {
+                $auth->assign($participanteRole, $user->getId());
+            }
 
             return $user;
         }

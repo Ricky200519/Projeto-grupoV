@@ -29,6 +29,8 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
 
+    // 🔽 ADICIONAR: Propriedade virtual para password no formulário
+    public $password;
 
     /**
      * {@inheritdoc}
@@ -54,9 +56,44 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_INACTIVE],
+            [['username', 'email'], 'required'],
+            [['username', 'email', 'password'], 'required', 'on' => 'create'],
+            ['email', 'email'],
+            ['username', 'string', 'min' => 2, 'max' => 255],
+            ['password', 'string', 'min' => 6],
+            ['username', 'unique', 'message' => 'Este username já está em uso.'],
+            ['email', 'unique', 'message' => 'Este email já está registado.'],
+
+            ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'username' => 'Username',
+            'email' => 'Email',
+            'password' => 'Password',
+            'status' => 'Estado',
+            'created_at' => 'Data de Criação',
+            'updated_at' => 'Data de Atualização',
+        ];
+    }
+
+    /**
+     * 🔽 ADICIONAR: Cenários para diferentes contextos
+     */
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios['create'] = ['username', 'email', 'password', 'status'];
+        $scenarios['default'] = ['username', 'email', 'status'];
+        return $scenarios;
     }
 
     /**
@@ -209,5 +246,44 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * 🔽 ADICIONAR: Método para criar utilizador com todas as configurações necessárias
+     */
+    public function createUser()
+    {
+        if ($this->validate()) {
+            // Configurar password e tokens
+            $this->setPassword($this->password);
+            $this->generateAuthKey();
+            $this->generateEmailVerificationToken();
+            $this->status = self::STATUS_ACTIVE;
+
+            if ($this->save()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 🔽 ADICIONAR: Método para obter a role atual do utilizador
+     */
+    public function getCurrentRole()
+    {
+        $auth = Yii::$app->authManager;
+        $roles = $auth->getRolesByUser($this->id);
+        return !empty($roles) ? array_keys($roles)[0] : null;
+    }
+
+    /**
+     * 🔽 ADICIONAR: Verificar se o utilizador tem uma role específica
+     */
+    public function hasRole($roleName)
+    {
+        $auth = Yii::$app->authManager;
+        $roles = $auth->getRolesByUser($this->id);
+        return array_key_exists($roleName, $roles);
     }
 }

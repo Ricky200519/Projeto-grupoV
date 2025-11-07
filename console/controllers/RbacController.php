@@ -88,6 +88,46 @@ class RbacController extends Controller
         echo "RBAC inicializado com sucesso!\n";
     }
 
+    // 🔽 NOVO MÉTODO: Atribuir role automaticamente a novos utilizadores
+    public function actionAssignRoleToNewUser($userId, $roleName = 'participante')
+    {
+        $auth = Yii::$app->authManager;
+        $user = User::findOne($userId);
+
+        if (!$user) {
+            echo "ERRO: Utilizador com ID $userId não encontrado.\n";
+            return false;
+        }
+
+        $role = $auth->getRole($roleName);
+        if (!$role) {
+            echo "ERRO: Role '$roleName' não encontrada.\n";
+            return false;
+        }
+
+        // Remover roles existentes (se houver)
+        $auth->revokeAll($userId);
+
+        // Atribuir nova role
+        $auth->assign($role, $userId);
+
+        echo "Role '$roleName' atribuída com sucesso ao utilizador {$user->username} (ID: $userId)\n";
+        return true;
+    }
+
+    // 🔽 NOVO MÉTODO: Atribuir role automaticamente por email (útil para migrações)
+    public function actionAssignRoleByEmail($email, $roleName)
+    {
+        $user = User::findOne(['email' => $email]);
+
+        if (!$user) {
+            echo "ERRO: Utilizador com email $email não encontrado.\n";
+            return false;
+        }
+
+        return $this->actionAssignRoleToNewUser($user->id, $roleName);
+    }
+
     protected function assignRoleByEmail($email, $roleName)
     {
         $auth = Yii::$app->authManager;
