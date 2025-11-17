@@ -9,6 +9,8 @@ use yii\widgets\ActiveForm;
 $this->title = 'Criar Novo Utilizador';
 $this->params['breadcrumbs'][] = ['label' => 'Utilizadores', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+$this->registerCssFile("@web/css/bootstrap.css");
+$this->registerCssFile("@web/css/user-create.css");
 ?>
     <div class="user-create">
     <div class="card">
@@ -27,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]); ?>
 
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 text-secondary">
                             <?= $form->field($model, 'username', [
                                 'template' => '
                                     {label}
@@ -42,13 +44,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             ]) ?>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-6 text-secondary">
                             <?= $form->field($model, 'email', [
                                 'template' => '
                                     {label}
                                     {input}
                                     {error}
-                                    <div class="help-block">Email válido para notificações</div>
                                 '
                             ])->textInput([
                                 'maxlength' => true,
@@ -60,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 text-secondary">
                             <?= $form->field($model, 'password', [
                                 'template' => '
                                     {label}
@@ -77,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="control-label">Tipo de Utilizador</label>
+                                <label class="control-label text-secondary">Tipo de Utilizador</label>
                                 <div class="form-control" style="border: none; background: none; padding-left: 0;">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="role" id="role_moderador" value="moderador" checked>
@@ -93,7 +94,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     </div>
                                 </div>
                                 <div class="help-block">
-                                    <small class="text-muted">
+                                    <small class="text-secondary">
                                         <strong>Moderador:</strong> Acesso ao backend + criar quizzes<br>
                                         <strong>Participante:</strong> Apenas criar e jogar quizzes
                                     </small>
@@ -109,7 +110,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ]) ?>
 
                         <?= Html::a('<i class="fas fa-times"></i> Cancelar', ['index'], [
-                            'class' => 'btn btn-default btn-lg ml-2'
+                            'class' => 'btn btn-danger btn-lg ml-2 '
                         ]) ?>
                     </div>
 
@@ -124,11 +125,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             </h5>
                         </div>
                         <div class="card-body">
-                            <p><strong>Permissões por Role:</strong></p>
+                            <p><strong class="text-secondary">Permissões por Role:</strong></p>
 
                             <div class="mb-3">
                                 <span class="badge badge-warning">Moderador</span>
-                                <ul class="mt-2 small">
+                                <ul class="mt-2 small text-secondary">
                                     <li>Acesso ao backend</li>
                                     <li>Ver todos os quizzes</li>
                                     <li>Gerir todos os quizzes</li>
@@ -138,7 +139,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                             <div class="mb-3">
                                 <span class="badge badge-info">Participante</span>
-                                <ul class="mt-2 small">
+                                <ul class="mt-2 small text-secondary">
                                     <li>Criar quizzes</li>
                                     <li>Jogar quizzes</li>
                                     <li>Gerir apenas os seus quizzes</li>
