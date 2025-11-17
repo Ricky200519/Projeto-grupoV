@@ -38,7 +38,6 @@ class UserSearch extends User
             return $dataProvider;
         }
 
-        // Filtros normais
         $query->andFilterWhere([
             'id' => $this->id,
             'status' => $this->status,
@@ -47,11 +46,6 @@ class UserSearch extends User
         $query->andFilterWhere(['like', 'username', $this->username])
             ->andFilterWhere(['like', 'email', $this->email]);
 
-        // Filtrar por role - VERSÃO SIMPLIFICADA
-        if ($this->role) {
-            // Por agora vamos ignorar o filtro de role para testar o básico
-            // Depois implementamos esta funcionalidade
-        }
 
         return $dataProvider;
     }

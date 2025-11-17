@@ -1,0 +1,27 @@
+.card-body{
+    background-color:#777777;
+}
+
+.table tbody tr td:nth-child(1),
+.table tbody tr:hover td:nth-child(1),
+.table tbody tr.table-active td:nth-child(1) {
+    color: white !important;
+}
+
+.table tbody tr td:nth-child(2),
+.table tbody tr:hover td:nth-child(2),
+.table tbody tr.table-active td:nth-child(2) {
+    color: white !important;
+}
+
+.table tbody tr td:nth-child(3),
+.table tbody tr:hover td:nth-child(3),
+.table tbody tr.table-active td:nth-child(3) {
+    color: white !important;
+}
+
+.table tbody tr td:nth-child(6),
+.table tbody tr:hover td:nth-child(6),
+.table tbody tr.table-active td:nth-child(6) {
+    color: white !important;
+}

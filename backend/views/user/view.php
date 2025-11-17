@@ -9,8 +9,9 @@ use yii\widgets\DetailView;
 $this->title = $model->username;
 $this->params['breadcrumbs'][] = ['label' => 'Utilizadores', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+$this->registerCssFile("../../web/css/user-view.css");
+$this->registerCssFile("../../web/css/bootstrap.min.css");
 
-// Verificar se é o utilizador atual
 $isCurrentUser = $model->id == Yii::$app->user->id;
 ?>
 <div class="user-view">
@@ -18,19 +19,22 @@ $isCurrentUser = $model->id == Yii::$app->user->id;
         <div class="card-header">
             <h3 class="card-title"><?= Html::encode($this->title) ?></h3>
             <div class="card-tools">
-                <?= Html::a('<i class="fas fa-arrow-left"></i> Voltar', ['index'], ['class' => 'btn btn-sm btn-default']) ?>
+                <?= Html::a('<i class="fas fa-arrow-left"></i> Voltar', ['index'], ['class' => 'btn btn-sm btn-default text-secondary']) ?>
             </div>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card card-info">
+                    <div class="card bg-info">
                         <div class="card-header">
                             <h3 class="card-title"><i class="fas fa-info-circle"></i> Informações</h3>
                         </div>
                         <div class="card-body">
                             <?= DetailView::widget([
                                 'model' => $model,
+                                'options' => [
+                                    'class' => 'table table-bordered'
+                                ],
                                 'attributes' => [
                                     'id',
                                     'username',
@@ -81,7 +85,7 @@ $isCurrentUser = $model->id == Yii::$app->user->id;
                 </div>
 
                 <div class="col-md-6">
-                    <div class="card card-success">
+                    <div class="card bg-info">
                         <div class="card-header">
                             <h3 class="card-title"><i class="fas fa-user-tag"></i> Alterar Role</h3>
                         </div>
@@ -94,7 +98,7 @@ $isCurrentUser = $model->id == Yii::$app->user->id;
                             <?php else: ?>
                                 <p class="text-muted">Seleciona a nova role para este utilizador:</p>
 
-                                <div class="d-grid gap-2">
+                                <div class="d-grid gap-2 ">
                                     <?= Html::a('<i class="fas fa-user-shield"></i> Tornar Moderador', ['view', 'id' => $model->id], [
                                         'class' => 'btn btn-warning btn-lg',
                                         'data' => [

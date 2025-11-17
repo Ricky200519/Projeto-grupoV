@@ -12,9 +12,10 @@ class UserController extends Controller
 {
     public function beforeAction($action)
     {
-        // 🔒 Só admin pode aceder a gestão de utilizadores
         if (!Yii::$app->user->can('admin') && in_array($action->id, ['index', 'view', 'delete', 'create'])) {
-            Yii::$app->session->set('accessDeniedMessage', 'Não tem permissões para gerir utilizadores. Apenas administradores podem aceder a esta funcionalidade.');
+            Yii::$app->session->setFlash('error',
+                'Não tem permissões para gerir utilizadores. Apenas administradores podem aceder a esta funcionalidade.'
+            );
             return $this->redirect(['/site/index']);
         }
 
@@ -38,17 +39,14 @@ class UserController extends Controller
         $model->scenario = 'create';
 
         if ($model->load(Yii::$app->request->post())) {
-            // Definir password e auth key
             $model->setPassword($model->password);
             $model->generateAuthKey();
             $model->generateEmailVerificationToken();
             $model->status = User::STATUS_ACTIVE;
 
             if ($model->save()) {
-                // 🔽 ATRIBUIÇÃO DIRETA DA ROLE (como no exemplo)
                 $roleName = Yii::$app->request->post('role', 'participante');
 
-                // Garantir que apenas roles permitidas são atribuídas
                 if (in_array($roleName, ['moderador', 'participante'])) {
                     $auth = Yii::$app->authManager;
                     $role = $auth->getRole($roleName);
@@ -59,7 +57,7 @@ class UserController extends Controller
                 }
 
                 Yii::$app->session->setFlash('success',
-                    "Utilizador <strong>{$model->username}</strong> criado com sucesso com role <strong>{$roleName}</strong>!"
+                    "Utilizador <strong>{$model->username}</strong> criado com sucesso com a role <strong>{$roleName}</strong>!"
                 );
                 return $this->redirect(['index']);
             } else {
@@ -76,19 +74,16 @@ class UserController extends Controller
 
     public function actionView($id)
     {
-        // 🔒 IMPEDIR que o admin veja/altere a sua própria role
         if ($id == Yii::$app->user->id) {
-            Yii::$app->session->set('accessDeniedMessage', 'Não podes ver ou alterar a tua própria role.');
+            Yii::$app->session->setFlash('error', 'Não podes ver ou alterar a tua própria role.');
             return $this->redirect(['/site/index']);
         }
 
         $model = $this->findModel($id);
 
-        // Processar mudança de role se for POST
         if (Yii::$app->request->isPost) {
             $newRole = Yii::$app->request->post('role');
 
-            // 🔒 IMPEDIR criar novos admins
             if ($newRole === 'admin') {
                 Yii::$app->session->setFlash('error',
                     'Não é possível criar novos administradores. O sistema suporta apenas um administrador.'
@@ -99,10 +94,8 @@ class UserController extends Controller
             if ($newRole && in_array($newRole, ['moderador', 'participante'])) {
                 $auth = Yii::$app->authManager;
 
-                // Remover roles atuais
                 $auth->revokeAll($id);
 
-                // Atribuir nova role
                 $role = $auth->getRole($newRole);
                 $auth->assign($role, $id);
 
@@ -120,9 +113,8 @@ class UserController extends Controller
 
     public function actionDelete($id)
     {
-        // 🔒 IMPEDIR que users se apaguem a si mesmos
         if ($id == Yii::$app->user->id) {
-            Yii::$app->session->set('accessDeniedMessage', 'Não podes eliminar a tua própria conta.');
+            Yii::$app->session->setFlash('error', 'Não podes eliminar a tua própria conta.');
             return $this->redirect(['/site/index']);
         }
 
@@ -130,11 +122,9 @@ class UserController extends Controller
         $username = $model->username;
 
         try {
-            // Remover roles primeiro
             $auth = Yii::$app->authManager;
             $auth->revokeAll($id);
 
-            // Eliminar o utilizador
             if ($model->delete()) {
                 Yii::$app->session->setFlash('success',
                     "Utilizador <strong>{$username}</strong> eliminado com sucesso!"
