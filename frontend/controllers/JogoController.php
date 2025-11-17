@@ -22,14 +22,29 @@ class JogoController extends Controller
                 'only' => ['create', 'update', 'delete'],
                 'rules' => [
                     [
-                        'actions' => ['create', 'update', 'delete'],
+                        'actions' => ['create'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['quizCreate'],
+                    ],
+                    [
+                        'actions' => ['update'],
+                        'allow' => true,
+                        'roles' => ['quizUpdate'],
+                    ],
+                    [
+                        'actions' => ['delete'],
+                        'allow' => true,
+                        'roles' => ['quizDelete'],
                     ],
                 ],
+                'denyCallback' => function ($rule, $action) {
+                    Yii::$app->session->setFlash('error', 'Não tens permissão para aceder a esta página.');
+                    return $this->redirect(['index']);
+                }
             ],
         ];
     }
+
 
     /**
      * Lists all Jogo models.
