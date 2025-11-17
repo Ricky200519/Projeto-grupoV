@@ -72,6 +72,7 @@ class RbacController extends Controller
         $auth->addChild($admin, $moderador);
         $auth->addChild($admin, $userPromote);
         $auth->addChild($admin, $userDelete);
+        $auth->removeChild($admin, $quizPlay);
 
         echo "Papéis criados com sucesso!\n";
 

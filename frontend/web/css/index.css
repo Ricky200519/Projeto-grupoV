@@ -37,6 +37,7 @@ body {
 }
 .create-card {
     height: 100%;
+    width: 16rem;
     cursor: pointer;
 }
 
