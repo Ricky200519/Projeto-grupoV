@@ -4,7 +4,6 @@
 use yii\bootstrap4\Breadcrumbs;
 ?>
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -18,7 +17,7 @@ use yii\bootstrap4\Breadcrumbs;
                         }
                         ?>
                     </h1>
-                </div><!-- /.col -->
+                </div>
                 <div class="col-sm-6">
                     <?php
                     echo Breadcrumbs::widget([
@@ -28,15 +27,12 @@ use yii\bootstrap4\Breadcrumbs;
                         ]
                     ]);
                     ?>
-                </div><!-- /.col -->
-            </div><!-- /.row -->
-        </div><!-- /.container-fluid -->
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- /.content-header -->
-
-    <!-- Main content -->
     <div class="content">
-        <?= $content ?><!-- /.container-fluid -->
+        <?= $content ?>
     </div>
-    <!-- /.content -->
+
 </div>

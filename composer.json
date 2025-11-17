@@ -27,6 +27,10 @@
         "codeception/specify": "^2.0",
         "codeception/verify": "^3.3",
         "codeception/codeception": "^5.3"
+        "codeception/codeception": "^5.3",
+        "codeception/specify": "^2.0",
+        "codeception/verify": "^3.0"
+
     },
     "autoload-dev": {
         "psr-4": {

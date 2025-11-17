@@ -15,7 +15,6 @@ class RbacController extends Controller
 
         echo "A criar permissões...\n";
 
-        // Permissões para Quizzes
         $quizCreate = $auth->createPermission('quizCreate');
         $quizCreate->description = 'Criar quizzes';
         $auth->add($quizCreate);
@@ -40,7 +39,6 @@ class RbacController extends Controller
         $quizManageAll->description = 'Gerir todos os quizzes';
         $auth->add($quizManageAll);
 
-        // Permissões para Users
         $userPromote = $auth->createPermission('userPromote');
         $userPromote->description = 'Promover/demorover utilizadores';
         $auth->add($userPromote);
@@ -55,32 +53,28 @@ class RbacController extends Controller
 
         echo "A criar papéis...\n";
 
-        // Participante
         $participante = $auth->createRole('participante');
         $auth->add($participante);
         $auth->addChild($participante, $quizCreate);
-        $auth->addChild($participante, $quizUpdate); // pode editar os seus
-        $auth->addChild($participante, $quizDelete); // pode eliminar os seus
+        $auth->addChild($participante, $quizUpdate);
+        $auth->addChild($participante, $quizDelete);
         $auth->addChild($participante, $quizPlay);
 
-        // Moderador
         $moderador = $auth->createRole('moderador');
         $auth->add($moderador);
-        $auth->addChild($moderador, $participante); // herda tudo do participante
+        $auth->addChild($moderador, $participante);
         $auth->addChild($moderador, $quizViewAll);
         $auth->addChild($moderador, $quizManageAll);
         $auth->addChild($moderador, $accessBackend);
 
-        // Admin
         $admin = $auth->createRole('admin');
         $auth->add($admin);
-        $auth->addChild($admin, $moderador); // herda tudo do moderador
+        $auth->addChild($admin, $moderador);
         $auth->addChild($admin, $userPromote);
         $auth->addChild($admin, $userDelete);
 
         echo "Papéis criados com sucesso!\n";
 
-        // Atribuir roles pelos emails corretos
         $this->assignRoleByEmail('admin@quiz.pt', 'admin');
         $this->assignRoleByEmail('moderador@quiz.pt', 'moderador');
         $this->assignRoleByEmail('participante@quiz.pt', 'participante');
@@ -88,7 +82,6 @@ class RbacController extends Controller
         echo "RBAC inicializado com sucesso!\n";
     }
 
-    // 🔽 NOVO MÉTODO: Atribuir role automaticamente a novos utilizadores
     public function actionAssignRoleToNewUser($userId, $roleName = 'participante')
     {
         $auth = Yii::$app->authManager;
@@ -105,17 +98,14 @@ class RbacController extends Controller
             return false;
         }
 
-        // Remover roles existentes (se houver)
         $auth->revokeAll($userId);
 
-        // Atribuir nova role
         $auth->assign($role, $userId);
 
         echo "Role '$roleName' atribuída com sucesso ao utilizador {$user->username} (ID: $userId)\n";
         return true;
     }
 
-    // 🔽 NOVO MÉTODO: Atribuir role automaticamente por email (útil para migrações)
     public function actionAssignRoleByEmail($email, $roleName)
     {
         $user = User::findOne(['email' => $email]);
@@ -145,13 +135,11 @@ class RbacController extends Controller
         }
     }
 
-    // Comando para atribuir role a um utilizador específico
     public function actionAssign($email, $role)
     {
         $this->assignRoleByEmail($email, $role);
     }
 
-    // Comando para verificar as roles dos utilizadores
     public function actionCheckRoles()
     {
         $auth = Yii::$app->authManager;

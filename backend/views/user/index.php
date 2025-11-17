@@ -6,17 +6,18 @@ use yii\grid\GridView;
 /** @var yii\web\View $this */
 /** @var backend\models\UserSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
-
 $this->title = 'Gestão de Utilizadores';
 $this->params['breadcrumbs'][] = $this->title;
+$this->registerCssFile("../../web/css/user-index.css");
+$this->registerCssFile("../../web/css/bootstrap.min.css");
 ?>
     <div class="user-index">
-        <div class="card">
+        <div class="card bg-white">
             <div class="card-header">
                 <h3 class="card-title"><?= Html::encode($this->title) ?></h3>
                 <div class="card-tools">
-                    <?= Html::a('<i class="fas fa-plus"></i> Criar Utilizador', ['create'], ['class' => 'btn btn-sm btn-success mr-2']) ?>
-                    <?= Html::a('<i class="fas fa-sync-alt"></i> Recarregar', ['index'], ['class' => 'btn btn-sm btn-default']) ?>
+                    <?= Html::a('<i class="fas fa-plus"></i> Criar Utilizador', ['create'], ['class' => 'btn btn-sm btn-primary mr-2']) ?>
+                    <?= Html::a('<i class="fas fa-sync-alt"></i> Recarregar', ['index'], ['class' => 'btn btn-sm btn-secondary']) ?>
                 </div>
             </div>
             <div class="card-body">
@@ -24,17 +25,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     'dataProvider' => $dataProvider,
                     'filterModel' => $searchModel,
                     'layout' => '{items} {pager}',
-                    'tableOptions' => ['class' => 'table table-striped table-bordered table-hover'],
+                    'tableOptions' => ['class' => 'table table-bordered'],
                     'columns' => [
                         [
                             'class' => 'yii\grid\SerialColumn',
                             'header' => '#',
+                            'headerOptions' => ['class' => 'text-primary'],
                         ],
                         'id',
                         'username',
                         'email:email',
                         [
                             'attribute' => 'role',
+                            'label' => 'Role',
+                            'headerOptions' => ['class' => 'text-primary'],
                             'value' => function($model) {
                                 $auth = Yii::$app->authManager;
                                 $roles = $auth->getRolesByUser($model->id);
@@ -71,6 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'class' => 'yii\grid\ActionColumn',
                             'template' => '{view} {delete}',
                             'header' => 'Ações',
+                            'headerOptions' => ['class' => 'text-primary'],
                             'buttons' => [
                                 'view' => function($url, $model) {
                                     return Html::a('<i class="fas fa-eye"></i>', $url, [
@@ -102,7 +107,6 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 <?php
-// Ativar tooltips
 $this->registerJs("
     $(function () {
         $('[data-toggle=\"tooltip\"]').tooltip();

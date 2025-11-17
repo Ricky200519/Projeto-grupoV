@@ -23,11 +23,8 @@ class LoginForm extends Model
     public function rules()
     {
         return [
-            // username and password are both required
             [['username', 'password'], 'required'],
-            // rememberMe must be a boolean value
             ['rememberMe', 'boolean'],
-            // password is validated by validatePassword()
             ['password', 'validatePassword'],
         ];
     }
@@ -57,11 +54,9 @@ class LoginForm extends Model
     public function login()
     {
         if ($this->validate()) {
-            // Verificar se é tentativa de login no backend
             if (Yii::$app->id === 'app-backend') {
                 $user = $this->getUser();
 
-                // Verificar se o utilizador tem permissão para aceder ao backend
                 if (!$this->hasBackendAccess($user)) {
                     $this->addError('password', 'Não tem permissões para aceder ao backend. Apenas administradores e moderadores podem aceder.');
                     return false;
@@ -86,11 +81,9 @@ class LoginForm extends Model
             return false;
         }
 
-        // Verificar roles do utilizador
         $auth = Yii::$app->authManager;
         $userRoles = $auth->getRolesByUser($user->id);
 
-        // Lista de roles permitidas no backend
         $allowedRoles = ['admin', 'moderador'];
 
         foreach ($userRoles as $role) {
