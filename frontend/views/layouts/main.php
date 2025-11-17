@@ -5,12 +5,14 @@
 
 use common\widgets\Alert;
 use frontend\assets\AppAsset;
+use yii\bootstrap5\BootstrapPluginAsset;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
 use yii\helpers\Url;
 
+BootstrapPluginAsset::register($this);
 AppAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
@@ -19,7 +21,7 @@ AppAsset::register($this);
     <head>
         <meta charset="<?= Yii::$app->charset ?>">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <?php $this->registerCsrfMetaTags() ?>
+        <link rel="icon" href="<?= Yii::getAlias('@web') ?>/icon.png">
         <title><?= Html::encode($this->title) ?></title>
         <?php $this->head() ?>
         <meta content="" name="keywords">
@@ -38,8 +40,9 @@ AppAsset::register($this);
 
         <link href="../../web/css/style.css" rel="stylesheet">
         <link href="../../web/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../web/css/index.css">
 
-
+        <?= Html::csrfMetaTags() ?>
     </head>
     <body class="d-flex flex-column h-100">
     <?php $this->beginBody() ?>
@@ -60,44 +63,57 @@ AppAsset::register($this);
                     <span class="fa fa-bars"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <div class="navbar-nav ms-auto py-0">
-                        <a href="<?= Url::toRoute(['site/index']) ?>"
-                           class="nav-item nav-link text-white <?= $currentAction == 'index' ? 'active' : '' ?>">Home</a>
-                        <a href="<?= Url::toRoute(['site/about']) ?>"
-                           class="nav-item nav-link text-white <?=$currentAction == 'about' ? 'active' : '' ?>">About</a>
-                        <a href="service.html" class="nav-item nav-link text-white">My Quizzes</a>
-                        <a href="<?= Url::toRoute(['site/contact']) ?>"
-                           class="nav-item nav-link text-white <?= $currentAction == 'contact' ? 'active' : '' ?>">Contact
-                            Us</a>
+                <div class="navbar-nav ms-auto py-0">
+                    <a href="<?= Url::toRoute(['site/index']) ?>"
+                       class="nav-item nav-link text-secondary <?= Yii::$app->controller->id === 'site' && $currentAction === 'index' ? 'active' : '' ?>">
+                        <i class="fa fa-home text-primary me-2"></i>Home
+                    </a>
 
-                        <?php if (Yii::$app->user->isGuest): ?>
-                            <a href="<?= Url::toRoute(['site/login']) ?>"
-                               class="nav-item nav-link text-white <?= $currentAction == 'login' ? 'active' : '' ?>">
-                                <i class="fa fa-sign-in-alt text-primary me-2"></i>Login
-                            </a>
-                            <a href="<?= Url::toRoute(['site/signup']) ?>"
-                               class="nav-item nav-link text-white <?= $currentAction == 'signup' ? 'active' : '' ?>">
-                                <i class="fa fa-user text-primary me-2"></i>Register
-                            </a>
-                        <?php else: ?>
-                            <span class="nav-item nav-link disabled fw-bold d-inline-flex align-items-center text-white">
-                        <i class="fa fa-user text-primary me-2"></i>
-                        <?= Html::encode(Yii::$app->user->identity->username) ?>
-                    </span>
+                    <a href="<?= Url::toRoute(['site/about']) ?>"
+                       class="nav-item nav-link text-secondary <?= Yii::$app->controller->id === 'site' && $currentAction === 'about' ? 'active' : '' ?>">
+                        <i class="fa fa-info text-primary me-2"></i>Sobre nós
+                    </a>
 
-                            <div class="nav-item">
-                                <?= Html::beginForm(['site/logout'], 'post', ['class' => 'd-inline']) ?>
-                                <button type="submit"
-                                        class="nav-item nav-link btn btn-link text-dark d-inline-flex align-items-center text-white">
-                                    <i class="fa fa-sign-out-alt text-primary me-2"></i>Logout
-                                </button>
-                                <?= Html::endForm() ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+                    <?php if (!Yii::$app->user->isGuest): ?>
+                        <a href="<?= Url::to(['jogo/index']) ?>"
+                           class="nav-item nav-link text-secondary <?= Yii::$app->controller->id === 'jogo' ? 'active' : '' ?>">
+                            <i class="fa fa-puzzle-piece text-primary me-2"></i>Os Meus Jogos
+                        </a>
+                    <?php endif; ?>
+
+                    <a href="<?= Url::toRoute(['site/contact']) ?>"
+                       class="nav-item nav-link text-secondary <?= Yii::$app->controller->id === 'site' && $currentAction === 'contact' ? 'active' : '' ?>">
+                        <i class="fa fa-phone-alt text-primary me-2"></i> Contacta-nos
+                    </a>
+
+                    <?php if (Yii::$app->user->isGuest): ?>
+                        <a href="<?= Url::toRoute(['site/login']) ?>"
+                           class="nav-item nav-link text-secondary <?= $currentAction == 'login' ? 'active' : '' ?>">
+                            <i class="fa fa-sign-in-alt text-primary me-2"></i>Login
+                        </a>
+                        <a href="<?= Url::toRoute(['site/signup']) ?>"
+                           class="nav-item nav-link text-secondary <?= $currentAction == 'signup' ? 'active' : '' ?>">
+                            <i class="fa fa-user text-primary me-2"></i>Registo
+                        </a>
+                    <?php else: ?>
+                        <span class="text-white nav-item nav-link disabled fw-bold d-inline-flex align-items-center">
+                                <i class="fa fa-user text-primary me-2"></i>
+                                <span class="text-white"><?= Html::encode(Yii::$app->user->identity->username) ?></span>
+                            </span>
+
+
+                        <div class="nav-item">
+                            <?= Html::beginForm(['site/logout'], 'post', ['class' => 'd-inline']) ?>
+                            <button type="submit"
+                                    class="nav-item nav-link btn btn-link text-dark d-inline-flex align-items-center text-secondary">
+                                <i class="fa fa-sign-out-alt text-primary me-2"></i>Logout
+                            </button>
+                            <?= Html::endForm() ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
-            </nav>
+        </div>
+        </nav>
         </div>
 
 

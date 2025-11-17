@@ -198,4 +198,25 @@ class User extends ActiveRecord implements IdentityInterface
         $roles = $auth->getRolesByUser($this->id);
         return array_key_exists($roleName, $roles);
     }
+
+    /**
+     * Gets query for [[Jogadors]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getJogadors()
+    {
+        return $this->hasMany(Jogador::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Jogos]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getJogos()
+    {
+        return $this->hasMany(Jogo::class, ['autor_id' => 'id']);
+    }
+
 }

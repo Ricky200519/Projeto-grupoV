@@ -14,13 +14,13 @@ $this->registerCssFile('@web/css/login.css');
 <div class="login-page">
     <div class="login-card">
         <h1 class="text-primary"><?= Html::encode($this->title) ?></h1>
-        <p class="text-secondary">Please fill out the following fields to login:</p>
+        <p class="text-secondary">Preenche com as tuas credenciais para fazer Login</p>
 
         <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
 
         <?= $form->field($model, 'username')->textInput(['autofocus' => true])->label($model->getAttributeLabel('username'), ['class' => 'text-primary']) ?>
-        <?= $form->field($model, 'password')->passwordInput(['autofocus' => true])->label($model->getAttributeLabel('password'), ['class' => 'text-primary']) ?>
-        <?= $form->field($model, 'rememberMe')->checkbox(['autofocus' => true])->label($model->getAttributeLabel('rememberMe'), ['class' => 'text-secondary']) ?>
+        <?= $form->field($model, 'password')->passwordInput(['autofocus' => false])->label($model->getAttributeLabel('password'), ['class' => 'text-primary']) ?>
+        <?= $form->field($model, 'rememberMe')->checkbox(['autofocus' => false])->label($model->getAttributeLabel('rememberMe'), ['class' => 'text-secondary']) ?>
 
         <div class="my-2 text-primary">
             If you forgot your password you can

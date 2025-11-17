@@ -66,4 +66,10 @@ class PasswordResetRequestForm extends Model
             ->setSubject('Password reset for ' . Yii::$app->name)
             ->send();
     }
+
+    public function getAutor()
+    {
+        return $this->hasOne(\common\models\User::class, ['id' => 'autor_id']);
+    }
+
 }

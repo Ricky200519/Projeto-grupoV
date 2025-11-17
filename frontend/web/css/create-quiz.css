@@ -1,0 +1,121 @@
+body {
+    background-color: #787878 !important;
+}
+
+.createquiz-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px);
+}
+
+.createquiz-card {
+    background-color: #D1D1D1;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 35.7rem;
+    color: #000;
+}
+
+.createquiz-card h1 {
+    font-weight: 600;
+}
+
+.pergunta-create-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px);
+}
+
+.pergunta-create-card {
+    background-color: #D1D1D1;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 35.7rem;
+    color: #000;
+}
+
+.pergunta-create-card h1 {
+    font-weight: 600;
+}
+
+.btn-primary {
+    border: none;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #04b976;
+}
+
+.jogoupdate-card h1{
+    font-weight: 600;
+}
+
+.jogoupdate-card {
+    background-color: #D1D1D1;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width:35.7rem;
+    color: #000;
+}
+
+.jogoupdate-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px);
+}
+
+.resp-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px);
+}
+
+.resp-card{
+    background-color: #D1D1D1;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width:35.7rem;
+    color: #000;
+}
+
+.resp-card h3{
+    font-weight: 600;
+}
+
+.pergupdate-card{
+    background-color: #D1D1D1;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width:35.7rem;
+    color: #000;
+}
+
+.pergupdate-card h1{
+    font-weight: 600;
+
+}
+
+.pergupdate-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px);
+}
+
+

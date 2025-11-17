@@ -1,0 +1,71 @@
+body {
+    background-image: url('../img/contact.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.contact-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: 80px;
+    padding-bottom: 40px;
+}
+
+.contact-card {
+    background: linear-gradient(135deg, #e2e2e2, #ffffff);
+    padding: 40px 50px;
+    border-radius: 15px;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: left;
+}
+
+.contact-card h1 {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--bs-primary);
+}
+
+.contact-card p {
+    color: var(--bs-secondary);
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+}
+
+.contact-card .form-group {
+    margin-bottom: 20px;
+}
+
+.btn-primary {
+    background-color: var(--bs-primary);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 500;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--bs-secondary);
+}
+
+.text-primary a {
+    color: var(--bs-primary);
+    text-decoration: none;
+}
+
+.text-primary a:hover {
+    color: var(--bs-secondary);
+}
+
+@media (max-width: 576px) {
+    .contact-card {
+        padding: 30px 20px;
+    }
+}
