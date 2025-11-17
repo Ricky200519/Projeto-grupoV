@@ -248,9 +248,6 @@ class User extends ActiveRecord implements IdentityInterface
         $this->password_reset_token = null;
     }
 
-    /**
-     * 🔽 ADICIONAR: Método para criar utilizador com todas as configurações necessárias
-     */
     public function createUser()
     {
         if ($this->validate()) {
@@ -267,9 +264,6 @@ class User extends ActiveRecord implements IdentityInterface
         return false;
     }
 
-    /**
-     * 🔽 ADICIONAR: Método para obter a role atual do utilizador
-     */
     public function getCurrentRole()
     {
         $auth = Yii::$app->authManager;
@@ -277,13 +271,31 @@ class User extends ActiveRecord implements IdentityInterface
         return !empty($roles) ? array_keys($roles)[0] : null;
     }
 
-    /**
-     * 🔽 ADICIONAR: Verificar se o utilizador tem uma role específica
-     */
     public function hasRole($roleName)
     {
         $auth = Yii::$app->authManager;
         $roles = $auth->getRolesByUser($this->id);
         return array_key_exists($roleName, $roles);
     }
+
+    /**
+     * Gets query for [[Jogadors]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getJogadors()
+    {
+        return $this->hasMany(Jogador::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[Jogos]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getJogos()
+    {
+        return $this->hasMany(Jogo::class, ['autor_id' => 'id']);
+    }
+
 }

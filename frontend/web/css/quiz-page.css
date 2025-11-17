@@ -1,0 +1,75 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.main-card {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+}
+
+.quiz-container {
+    background-color: #D1D1D1;
+    border-radius: 20px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 1200px;
+    padding: 40px;
+}
+
+.quiz-card {
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+}
+
+.quiz-card:hover {
+    transform: scale(1.03);
+}
+
+.btn-success {
+    border: none;
+}
+
+.btn-success:hover {
+    background-color: #04b976;
+}
+
+.btn-primary {
+    border: none;
+}
+
+.btn-danger {
+    border: none;
+}
+
+.text-secondary {
+    color: #6c757d !important;
+}
+
+.accordion-button {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.accordion-button::after {
+    filter: invert(1);
+}
+
+.accordion-button::after {
+    display: none;
+}
+
+.accordion-button .arrow {
+    transition: transform 0.25s ease;
+    font-size: 1rem;
+}
+
+.accordion-button:not(.collapsed) .arrow {
+    transform: rotate(90deg);
+}
+
+
+
