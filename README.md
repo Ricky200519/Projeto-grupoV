@@ -7,6 +7,9 @@
 
 **Robin Perino nº2241585**
 
+**Credenciais de Login**
+
+### Acesso backend:
 **Credenciais de Login**  
 
   ### Acesso backend:
@@ -17,6 +20,10 @@
     username: moderador
     password: moderador123
 
+### Acesso frontend:
+    --user pre criado--
+    username: participante 
+    password: participante123
   ### Acesso frontend:
     --user pre criado--
     username: participante 

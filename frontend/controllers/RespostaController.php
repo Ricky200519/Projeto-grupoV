@@ -103,12 +103,8 @@ class RespostaController extends Controller
         }
 
         $jogo_id = $pergunta->jogo_id;
-
         $total = Resposta::find()->where(['pergunta_id' => $pergunta_id])->count();
-
-        $existeCorreta = Resposta::find()
-            ->where(['pergunta_id' => $pergunta_id, 'correta' => 1])
-            ->exists();
+        $existeCorreta = Resposta::find()->where(['pergunta_id' => $pergunta_id, 'correta' => 1])->exists();
 
         if ($total >= 4) {
             Yii::$app->session->setFlash('error', 'Esta pergunta já tem 4 respostas.');
@@ -118,22 +114,34 @@ class RespostaController extends Controller
         $model = new Resposta();
         $model->pergunta_id = $pergunta_id;
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $model->save();
+        if ($model->load(Yii::$app->request->post())) {
 
-            // Botões do form
-            if (Yii::$app->request->post('add-answer') !== null) {
-                // Criar outra resposta (não permite mais de 4)
-                return $this->redirect(['create', 'pergunta_id' => $pergunta_id]);
+            if ($model->correta == 1 && $existeCorreta) {
+                Yii::$app->session->setFlash('error', 'Já existe uma resposta correta nesta pergunta.');
+                $model->correta = 0;
             }
 
-            if (Yii::$app->request->post('new-question') !== null) {
-                return $this->redirect(['/pergunta/create', 'jogo_id' => $jogo_id]);
-            }
+            if ($model->save()) {
 
-            if (Yii::$app->request->post('finish') !== null) {
-                Yii::$app->session->setFlash('success', 'Respostas concluídas!');
-                return $this->redirect(['view', 'pergunta_id' => $pergunta_id]);
+                if (Yii::$app->request->post('add-answer') !== null) {
+                    return $this->redirect(['create', 'pergunta_id' => $pergunta_id]);
+                }
+
+                if (Yii::$app->request->post('new-question') !== null) {
+                    if ($total + 1 < 2) {
+                        Yii::$app->session->setFlash('error', 'Cada pergunta deve ter pelo menos 2 respostas.');
+                        return $this->redirect(['create', 'pergunta_id' => $pergunta_id]);
+                    }
+                    return $this->redirect(['/pergunta/create', 'jogo_id' => $pergunta->jogo_id]);
+                }
+
+                if (Yii::$app->request->post('finish') !== null) {
+                    if ($total + 1 < 2) {
+                        Yii::$app->session->setFlash('error', 'Não podes finalizar. Cada pergunta deve ter pelo menos 2 respostas.');
+                        return $this->redirect(['create', 'pergunta_id' => $pergunta_id]);
+                    }
+                    return $this->redirect(['view', 'pergunta_id' => $pergunta_id]);
+                }
             }
         }
 
@@ -146,9 +154,6 @@ class RespostaController extends Controller
             'isUpdate' => false,
         ]);
     }
-
-
-
 
     /**
      * Updates an existing Resposta model.
@@ -177,10 +182,6 @@ class RespostaController extends Controller
         ]);
     }
 
-
-
-
-
     /**
      * Deletes an existing Resposta model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -198,7 +199,6 @@ class RespostaController extends Controller
         return $this->redirect(['resposta/view', 'pergunta_id' => $pergunta_id]);
     }
 
-
     /**
      * Finds the Resposta model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
@@ -214,4 +214,24 @@ class RespostaController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    public function actionBackToGame($pergunta_id)
+    {
+        $pergunta = Pergunta::findOne($pergunta_id);
+        if (!$pergunta) {
+            throw new NotFoundHttpException('Pergunta não encontrada.');
+        }
+
+        $respostas = Resposta::find()->where(['pergunta_id' => $pergunta_id])->all();
+        $respostasCount = count($respostas);
+        $totalCorretas = Resposta::find()->where(['pergunta_id' => $pergunta_id, 'correta' => 1])->count();
+
+        if (($respostasCount != 2 && $respostasCount != 4) || $totalCorretas != 1) {
+            Yii::$app->session->setFlash('error', 'Não podes voltar ao jogo até cada pergunta ter 2 ou 4 respostas e exatamente 1 correta.');
+            return $this->redirect(['view', 'pergunta_id' => $pergunta_id]);
+        }
+
+        return $this->redirect(['jogo/view', 'id' => $pergunta->jogo_id]);
+    }
+
 }

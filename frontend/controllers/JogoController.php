@@ -3,11 +3,14 @@
 namespace frontend\controllers;
 
 use common\models\Jogo;
+use common\models\Pergunta;
+use common\models\Tentativa;
+use common\models\OpcaoEscolhida;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-
+use common\models\User;
 
 class JogoController extends Controller
 {
@@ -19,7 +22,7 @@ class JogoController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['create', 'update', 'delete'],
+                'only' => ['create', 'update', 'delete', 'view'],
                 'rules' => [
                     [
                         'actions' => ['create'],
@@ -36,6 +39,13 @@ class JogoController extends Controller
                         'allow' => true,
                         'roles' => ['quizDelete'],
                     ],
+                    [
+                        'actions' => ['view'],
+                        'allow' => true,
+                        'roles' => ['quizView'],
+                    ],
+
+
                 ],
                 'denyCallback' => function ($rule, $action) {
                     Yii::$app->session->setFlash('error', 'Não tens permissão para aceder a esta página.');
@@ -44,7 +54,6 @@ class JogoController extends Controller
             ],
         ];
     }
-
 
     /**
      * Lists all Jogo models.
@@ -62,12 +71,8 @@ class JogoController extends Controller
         $userId = Yii::$app->user->id;
 
         $meusJogos = Yii::$app->user->identity->jogos;
-        /*meusJogos = \common\models\Jogo::find()
-            ->where(['autor_id' => $userId])
-            ->orderBy(['datacriacao' => SORT_DESC])
-            ->all();*/
 
-        $publicos = \common\models\Jogo::find()
+        $publicos = Jogo::find()
             ->where(['IsPublic' => 1])
             ->andWhere(['<>', 'autor_id', $userId])
             ->orderBy(['datacriacao' => SORT_DESC])
@@ -79,7 +84,6 @@ class JogoController extends Controller
         ]);
     }
 
-
     /**
      * Displays a single Jogo model.
      * @param int $id ID
@@ -88,12 +92,10 @@ class JogoController extends Controller
      */
     public function actionView($id)
     {
-
         $model = Jogo::findOne($id);
         if (!$model) {
             throw new NotFoundHttpException('Quiz não encontrado.');
         }
-
 
         $perguntas = $model->perguntas;
 
@@ -101,7 +103,6 @@ class JogoController extends Controller
             'model' => $model,
             'perguntas' => $perguntas,
         ]);
-
     }
 
     /**
@@ -115,7 +116,6 @@ class JogoController extends Controller
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
-
                 // Definir dados automáticos
                 $model->autor_id = Yii::$app->user->id;
                 $model->datacriacao = date('Y-m-d H:i:s');
@@ -133,7 +133,6 @@ class JogoController extends Controller
             'model' => $model,
         ]);
     }
-
 
     /**
      * Updates an existing Jogo model.
@@ -170,6 +169,158 @@ class JogoController extends Controller
     }
 
     /**
+     * Start a new quiz attempt.
+     *
+     * @param int $jogo_id
+     * @return \yii\web\Response
+     */
+    public function actionStart($jogo_id)
+    {
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect(['site/login']);
+        }
+
+        $jogo = Jogo::findOne($jogo_id);
+        if (!$jogo) {
+            throw new NotFoundHttpException('Jogo não encontrado.');
+        }
+
+        $tentativa = new Tentativa();
+        $tentativa->jogador_id = Yii::$app->user->id;
+        $tentativa->jogo_id = $jogo_id;
+        $tentativa->datahora = date('Y-m-d H:i:s');
+        $tentativa->save();
+
+        $primeiraPergunta = $jogo->perguntas[0] ?? null;
+        if ($primeiraPergunta) {
+            return $this->redirect(['pergunta', 'tentativa_id' => $tentativa->id, 'pergunta_id' => $primeiraPergunta->id]);
+        }
+
+        Yii::$app->session->setFlash('error', 'Não existem perguntas neste quiz.');
+        return $this->redirect(['index']);
+    }
+
+    /**
+     * Apresenta o quiz antes de iniciar.
+     *
+     * @param int $jogo_id
+     * @return string
+     */
+    public function actionApresentacao($jogo_id)
+    {
+        $jogo = Jogo::findOne($jogo_id);
+        if (!$jogo) {
+            throw new NotFoundHttpException('Jogo não encontrado.');
+        }
+
+        if (Yii::$app->user->isGuest) {
+            return $this->redirect(['site/login']);
+        }
+
+        $totalPerguntas = Pergunta::find()->where(['jogo_id' => $jogo_id])->count();
+
+        return $this->render('apresentacao', [
+            'jogo' => $jogo,
+            'totalPerguntas' => $totalPerguntas,
+        ]);
+    }
+
+    /**
+     * Handle question display and answer processing.
+     *
+     * @param int $tentativa_id
+     * @param int $pergunta_id
+     * @return string
+     */
+    public function actionPergunta($tentativa_id, $pergunta_id)
+    {
+        $tentativa = Tentativa::findOne($tentativa_id);
+        //$tentativa->jogo->perguntas;
+        if (!$tentativa || $tentativa->jogador_id != Yii::$app->user->id) {
+            throw new NotFoundHttpException('Tentativa inválida.');
+        }
+
+        $pergunta = Pergunta::findOne($pergunta_id);
+        if (!$pergunta) {
+            throw new NotFoundHttpException('Pergunta não encontrada.');
+        }
+
+        $respostas = $pergunta->respostas;
+
+        $proximaPergunta = Pergunta::find()
+            ->where(['jogo_id' => $pergunta->jogo_id])
+            ->andWhere(['>', 'id', $pergunta->id])
+            ->orderBy(['id' => SORT_ASC])
+            ->one();
+
+        $isUltimaPergunta = $proximaPergunta === null;
+        $proximaPerguntaId = $proximaPergunta ? $proximaPergunta->id : null;
+
+        if (Yii::$app->request->isPost) {
+            $respostaEscolhidaId = Yii::$app->request->post('resposta_id');
+            if ($respostaEscolhidaId) {
+                $opcao = new OpcaoEscolhida();
+                $opcao->resposta_id = $respostaEscolhidaId;
+                $opcao->tentativa_id = $tentativa->id;
+                $opcao->jogador_id = Yii::$app->user->id;
+                $opcao->pergunta_id = $pergunta->id;
+                $opcao->datahora = date('Y-m-d H:i:s');
+                $opcao->save();
+            }
+
+            if ($isUltimaPergunta) {
+                return $this->redirect(['finish', 'tentativa_id' => $tentativa->id]);
+            } else {
+                return $this->redirect(['pergunta', 'tentativa_id' => $tentativa->id, 'pergunta_id' => $proximaPerguntaId]);
+            }
+        }
+
+        return $this->render('pergunta', [
+            'tentativa' => $tentativa,
+            'pergunta' => $pergunta,
+            'respostas' => $respostas,
+            'isUltimaPergunta' => $isUltimaPergunta,
+            'proximaPerguntaId' => $proximaPerguntaId,
+        ]);
+    }
+    /**
+     * Finaliza a tentativa e calcula a pontuação.
+     * @param int $tentativa_id
+     * @return string
+     * @throws NotFoundHttpException
+     */
+    public function actionFinish($tentativa_id)
+    {
+        $tentativa = Tentativa::findOne($tentativa_id);
+        if (!$tentativa || $tentativa->jogador_id != Yii::$app->user->id) {
+            throw new NotFoundHttpException('Tentativa inválida.');
+        }
+
+        $opcoesEscolhidas = OpcaoEscolhida::find()
+            ->where(['tentativa_id' => $tentativa->id])
+            ->all();
+
+        $score = 0;
+
+        foreach ($opcoesEscolhidas as $opcao) {
+            if ($opcao->resposta->correta == 1) {
+                $score += $opcao->resposta->pergunta->pontosvalor;
+            }
+        }
+
+        return $this->render('finish', [
+            'tentativa' => $tentativa,
+            'score' => $score,
+        ]);
+    }
+    /**
+     * Finalizes the quiz and shows the score.
+     *
+     * @param int $tentativa_id
+     * @return string
+     */
+
+    /**
      * Finds the Jogo model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
@@ -182,8 +333,6 @@ class JogoController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException('A página solicitada não existe.');
     }
-
-
 }
