@@ -98,7 +98,6 @@ class PerguntaController extends Controller
 
             Yii::$app->session->setFlash('success', 'Pergunta criada com sucesso!');
 
-            // Ir criar respostas
             return $this->redirect(['resposta/create', 'pergunta_id' => $model->id]);
         }
 

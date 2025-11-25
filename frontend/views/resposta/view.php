@@ -1,16 +1,22 @@
 <?php
 use yii\helpers\Html;
+use common\models\Resposta;
 
 /** @var common\models\Pergunta $pergunta */
-/** @var common\models\Resposta[] $respostas */
+/** @var Resposta[] $respostas */
 
 $this->title = 'Respostas da Pergunta: ' . $pergunta->texto;
 
 $respostasCount = count($respostas);
+$respostasCorretas = Resposta::find()->where(['pergunta_id' => $pergunta->id, 'correta' => 1])->all();
+$totalCorretas = count($respostasCorretas);
+
 ?>
 <div class="main-card">
     <div class="resposta-details card p-4 mb-4">
-        <?= Html::a('← Voltar ao jogo', ['jogo/view', 'id' => $pergunta->jogo_id], ['class' => 'text-primary mb-3 d-inline-block']) ?>
+        <?= Html::a('← Voltar ao jogo', ['resposta/back-to-game', 'pergunta_id' => $pergunta->id], [
+                'class' => 'text-primary mb-3 d-inline-block'
+        ]) ?>
 
         <h2 class="mb-3"><?= Html::encode($pergunta->texto) ?></h2>
 
@@ -48,13 +54,9 @@ $respostasCount = count($respostas);
             <p class="text-secondary">Ainda não existem respostas para esta pergunta.</p>
         <?php endif; ?>
 
-        <?php
-        $addButtonOptions = ['class' => 'btn btn-primary mt-3'];
-        if ($respostasCount >= 4) {
-            $addButtonOptions = ['class'=>'btn btn-primary mt-3 disabled'];
-            $addButtonOptions['title'] = 'Já existem 4 respostas';
-        }
-        ?>
-        <?= Html::a('Adicionar Resposta', ['resposta/create', 'pergunta_id' => $pergunta->id], $addButtonOptions) ?>
+        <?= Html::a('Adicionar Resposta', ['resposta/create', 'pergunta_id' => $pergunta->id], [
+                'class' => 'btn btn-primary mt-3' . ($respostasCount >= 4 ? ' disabled' : ''),
+                'title' => $respostasCount >= 4 ? 'Já existem 4 respostas' : ''
+        ]) ?>
     </div>
 </div>

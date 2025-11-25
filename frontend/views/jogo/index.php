@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Html;
 
 $this->title = 'Os Meus Jogos';
@@ -24,13 +25,15 @@ $this->registerJsFile("@web/js/jogo-index.js", ['depends' => [\yii\web\JqueryAss
                     </button>
                 </h2>
 
-                <div id="collapseMeus" class="accordion-collapse collapse show" aria-labelledby="headingMeus" data-bs-parent="#accordionMeus">
+                <div id="collapseMeus" class="accordion-collapse collapse show" aria-labelledby="headingMeus"
+                     data-bs-parent="#accordionMeus">
                     <div class="accordion-body">
                         <?php if (!empty($meusJogos)): ?>
                             <div class="d-flex flex-wrap gap-4">
                                 <?php foreach ($meusJogos as $jogo): ?>
-                                <a href="<?= \yii\helpers\Url::to(['jogo/view', 'id' => $jogo->id]) ?>" class="text-decoration-none">
-                                    <div class="card quiz-card text-dark" style="width: 18rem;">
+                                    <a href="<?= \yii\helpers\Url::to(['jogo/view', 'id' => $jogo->id]) ?>"
+                                       class="text-decoration-none">
+                                        <div class="card quiz-card text-dark" style="width: 18rem;">
                                             <div class="card-body">
                                                 <h5 class="card-title fw-bold text-secondary"><?= Html::encode($jogo->titulo) ?></h5>
                                                 <p class="card-text text-secondary mb-1">
@@ -38,23 +41,25 @@ $this->registerJsFile("@web/js/jogo-index.js", ['depends' => [\yii\web\JqueryAss
                                                 </p>
                                                 <p class="card-text">
                                                     <small class="text-muted">
-                                                        Criado em: <?= Yii::$app->formatter->asDate($jogo->datacriacao, 'php:d/m/Y') ?>
+                                                        Criado
+                                                        em: <?= Yii::$app->formatter->asDate($jogo->datacriacao, 'php:d/m/Y') ?>
                                                     </small>
                                                 </p>
 
                                                 <div class="d-flex flex-column gap-2">
-                                                    <?= Html::a('Criar Perguntas', ['pergunta/create', 'jogo_id' => $jogo->id], ['class' => 'btn btn-primary btn-sm fw-bold']) ?>
-                                                    <?= Html::a('Editar', ['update', 'id' => $jogo->id], ['class' => 'btn btn-primary btn-sm fw-bold']) ?>
-                                                    <?= Html::beginForm(['delete', 'id' => $jogo->id], 'post', ['style' => 'display:inline']) ?>
-                                                    <?= Html::submitButton('Eliminar', [
-                                                            'class' => 'btn btn-danger btn-sm fw-bold w-100',
-                                                            'data' => ['confirm' => 'Tens a certeza que queres eliminar este quiz?'],
+                                                    <?= Html::a('Criar Perguntas', ['pergunta/create', 'jogo_id' => $jogo->id], [
+                                                            'class' => 'btn btn-primary btn-sm fw-bold'
                                                     ]) ?>
-                                                    <?= Html::endForm() ?>
+                                                    <?= Html::a('Editar', ['update', 'id' => $jogo->id], [
+                                                            'class' => 'btn btn-secondary btn-sm fw-bold'
+                                                    ]) ?>
+                                                    <?= Html::a('Jogar', ['jogo/apresentacao', 'jogo_id' => $jogo->id], [
+                                                            'class' => 'btn btn-success btn-sm fw-bold'
+                                                    ]) ?>
                                                 </div>
                                             </div>
                                         </div>
-                                </a>
+                                    </a>
                                 <?php endforeach; ?>
                             </div>
                         <?php else: ?>
@@ -75,7 +80,8 @@ $this->registerJsFile("@web/js/jogo-index.js", ['depends' => [\yii\web\JqueryAss
                     </button>
                 </h2>
 
-                <div id="collapsePublicos" class="accordion-collapse collapse show" aria-labelledby="headingPublicos" data-bs-parent="#accordionPublicos">
+                <div id="collapsePublicos" class="accordion-collapse collapse show" aria-labelledby="headingPublicos"
+                     data-bs-parent="#accordionPublicos">
                     <div class="accordion-body">
                         <?php if (!empty($publicos)): ?>
                             <div class="d-flex flex-wrap gap-4">
@@ -88,10 +94,13 @@ $this->registerJsFile("@web/js/jogo-index.js", ['depends' => [\yii\web\JqueryAss
                                             </p>
                                             <p class="card-text">
                                                 <small class="text-muted">
-                                                    Criado por: <?= Html::encode($jogo->autor ? $jogo->autor->username : 'Desconhecido') ?>
-                                                 </small>
+                                                    Criado
+                                                    por: <?= Html::encode($jogo->autor ? $jogo->autor->username : 'Desconhecido') ?>
+                                                </small>
                                             </p>
-                                            <?= Html::a('Jogar', ['site/index'], ['class' => 'btn btn-success btn-sm w-100 fw-bold']) ?>
+                                            <?= Html::a('Jogar', ['jogo/apresentacao', 'jogo_id' => $jogo->id], [
+                                                    'class' => 'btn btn-success btn-sm w-100 fw-bold'
+                                            ]) ?>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>

@@ -5,6 +5,9 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var common\models\Resposta $model */
 /** @var common\models\Pergunta $pergunta */
+/** @var int $jogo_id */
+/** @var int|null $total */
+/** @var bool $isUpdate */
 
 $this->title = 'Adicionar resposta à pergunta: ' . $pergunta->texto;
 
