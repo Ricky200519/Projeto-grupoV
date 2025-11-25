@@ -11,13 +11,21 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
-    'modules' => [],
+    'modules' => [
+        'api' => [
+            'class' => 'backend\modules\api\ModuleAPI',
+        ],
+    ],
     'components' => [
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
         ],
         'request' => [
             'csrfParam' => '_csrf-backend',
+            'enableCsrfValidation' => false,
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ]
         ],
         'user' => [
             'identityClass' => 'common\models\User',
@@ -43,7 +51,16 @@ return [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+            'enableStrictParsing' => false,
             'rules' => [
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => ['api/jogo', 'api/pergunta', 'api/resposta'],
+                    'pluralize' => false,
+                    'extraPatterns' => [
+                        'GET {id}/perguntas' => 'perguntas', //endpoint Master/Detail
+                    ],
+                ],
             ],
         ],
 
@@ -57,7 +74,12 @@ return [
     ],
     'as access' => [
         'class' => 'yii\filters\AccessControl',
-        'except' => ['site/login', 'site/error', 'site/logout'],
+        'except' => [
+            'site/login',
+            'site/error',
+            'site/logout',
+            'api/*'
+        ],
         'rules' => [
             [
                 'allow' => true,
