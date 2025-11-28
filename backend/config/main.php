@@ -78,7 +78,7 @@ return [
             'site/login',
             'site/error',
             'site/logout',
-            'api/*'
+
         ],
         'rules' => [
             [
