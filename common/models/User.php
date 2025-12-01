@@ -199,6 +199,10 @@ class User extends ActiveRecord implements IdentityInterface
         return array_key_exists($roleName, $roles);
     }
 
+    public function isAdmin()
+    {
+        return Yii::$app->authManager->getRolesByUser($this->id)['admin'] ?? false;
+    }
     /**
      * Gets query for [[Jogadors]].
      *

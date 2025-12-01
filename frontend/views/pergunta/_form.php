@@ -31,8 +31,23 @@ use yii\widgets\ActiveForm;
     ])->label('Pontos (Max.100)', ['class' => 'text-primary']) ?>
 
     <div class="form-group mt-3">
-        <?= Html::submitButton($text . ' Resposta', ['class' => 'btn btn-primary']) ?>
+        <?= Html::submitButton($text . ' Pergunta', ['class' => 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
 </div>
+<script>
+    document.querySelectorAll('.pergunta-form input[type=text], .pergunta-form input[type=number]').forEach(input => {
+        const label = input.previousElementSibling;
+        if (label && label.tagName === 'LABEL') {
+            label.addEventListener('click', () => {
+                input.focus();
+                const val = input.value;
+                input.value = '';
+                input.value = val;
+            });
+        }
+    });
+</script>
+
+
