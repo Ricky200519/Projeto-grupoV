@@ -45,6 +45,22 @@ class Tentativa extends \yii\db\ActiveRecord
         ];
     }
 
+
+    public function getPontosAteAgora()
+    {
+        $opcoes = $this->opcaoescolhidas;
+
+        $total = 0;
+
+        foreach ($opcoes as $op) {
+            if ($op->resposta && $op->resposta->correta == 1) {
+                $total += $op->resposta->pergunta->pontosvalor;
+            }
+        }
+
+        return $total;
+    }
+
     public function isAnswered()
     {
       return OpcaoEscolhida::find()->where(['tentativa_id' => $this->id])->exists();
@@ -64,6 +80,50 @@ class Tentativa extends \yii\db\ActiveRecord
     {
         return $this->hasMany(OpcaoEscolhida::class, ['tentativa_id' => 'id']);
     }
+
+    public function calcularPontuacao()
+    {
+        $opcoes = $this->opcaoescolhidas;
+        $totalPontos = 0;
+        $totalPontosMax = 0;
+        $acertos = 0;
+
+        foreach ($opcoes as $op) {
+            $pontosPergunta = $op->resposta->pergunta->pontosvalor ?? 0;
+            $totalPontosMax += $pontosPergunta;
+            if ($op->resposta && $op->resposta->correta) {
+                $acertos++;
+                $totalPontos += $pontosPergunta;
+            }
+        }
+
+        $percentagem = $totalPontosMax > 0 ? ceil(($totalPontos / $totalPontosMax) * 100) : 0;
+
+        return [
+            'totalPontos' => $totalPontos,
+            'totalPontosMax' => $totalPontosMax,
+            'acertos' => $acertos,
+            'totalPerguntas' => count($opcoes),
+            'percentagem' => $percentagem,
+        ];
+    }
+
+    public function posicaoJogadorAtual($limit = 10)
+    {
+        $ranking = $this->jogo->getRanking();
+        $posicao = null;
+        $ordem = 1;
+        foreach ($ranking as $j) {
+            if ($j->user_id == $this->jogador_id) {
+                $posicao = $ordem;
+                break;
+            }
+            $ordem++;
+        }
+        return $posicao;
+    }
+
+
 
 }
 

@@ -75,8 +75,17 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $userId = Yii::$app->user->id;
+
+        $publicos = \common\models\Jogo::find()
+            ->where(['isPublic' => 1])
+            ->all();
+
+        return $this->render('index', [
+            'publicos' => $publicos,
+        ]);
     }
+
 
     /**
      * Logs in a user.

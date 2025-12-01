@@ -1,0 +1,40 @@
+#timerCircle {
+    width: 7.5rem;
+    height: 7.5em;
+    border-radius: 50%;
+    border: 0.5rem solid #00d084;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.25rem auto;
+}
+
+#timerText {
+    font-size: 2.125rem;
+    font-weight: normal;
+}
+
+.score-box {
+    font-size: 4rem;
+    font-weight: bold;
+}
+
+.my-progress {
+    height: 1.375rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.resposta-card {
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background-color 0.4s, color 0.4s;
+    cursor: pointer;
+}
+
+.resposta-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+    transform: scale(1.03);
+}
+
+.progress-bar {
+    transition: width 0.8s ease-in-out;
+}

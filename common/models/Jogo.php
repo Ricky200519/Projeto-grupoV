@@ -5,34 +5,13 @@ namespace common\models;
 use frontend\models\Sala;
 use Yii;
 
-/**
- * This is the model class for table "jogo".
- *
- * @property int $id
- * @property string $titulo
- * @property string|null $descricao
- * @property string|null $datacriacao
- * @property int|null $autor_id
- * @property int $IsPublic
- *
- * @property Pergunta[] $perguntas
- * @property Sala[] $salas
- */
 class Jogo extends \yii\db\ActiveRecord
 {
-
-
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'jogo';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
@@ -46,9 +25,6 @@ class Jogo extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -73,22 +49,11 @@ class Jogo extends \yii\db\ActiveRecord
         return false;
     }
 
-
-    /**
-     * Gets query for [[Perguntas]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
     public function getPerguntas()
     {
         return $this->hasMany(Pergunta::class, ['jogo_id' => 'id']);
     }
 
-    /**
-     * Gets query for [[Salas]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
     public function getSalas()
     {
         return $this->hasMany(Sala::class, ['jogo_id' => 'id']);
@@ -99,6 +64,96 @@ class Jogo extends \yii\db\ActiveRecord
         return $this->hasOne(\common\models\User::class, ['id' => 'autor_id']);
     }
 
+    public function getRatings()
+    {
+        return $this->hasMany(Rating::class, ['jogo_id' => 'id']);
+    }
 
+    public function getTentativas($userId)
+    {
+        return Tentativa::find()
+            ->where(['jogo_id' => $this->id, 'jogador_id' => $userId])
+            ->count();
+    }
 
+    public function getMelhorPontuacao($userId)
+    {
+        return Jogador::find()
+            ->where(['jogo_id' => $this->id, 'user_id' => $userId])
+            ->max('pontuacao');
+    }
+
+    public function getRanking()
+    {
+        return Jogador::find()
+            ->where(['jogo_id' => $this->id])
+            ->orderBy(['pontuacao' => SORT_DESC])
+            ->all();
+    }
+
+    public function getTop3()
+    {
+        $ranking = $this->getRanking();
+        return array_map(function ($j) {
+            return [
+                'username' => $j->user->username,
+                'pontuacao' => $j->pontuacao,
+            ];
+        }, array_slice($ranking, 0, 3));
+    }
+
+    public function getPosicaoJogador($userId)
+    {
+        $ranking = $this->getRanking();
+        $rank = 1;
+
+        foreach ($ranking as $j) {
+            if ($j->user_id == $userId) {
+                return $rank;
+            }
+            $rank++;
+        }
+
+        return null;
+    }
+
+    public function getMediaRating()
+    {
+        return $this->getRatings()->average('estrelas');
+    }
+
+    public function getTotalRatings()
+    {
+        return $this->getRatings()->count();
+    }
+
+    public function getUserRating($userId)
+    {
+        return Rating::find()
+            ->where(['jogo_id' => $this->id, 'user_id' => $userId])
+            ->one();
+    }
+
+    public function getCorMedalha($posicao)
+    {
+        if (!$posicao) {
+            return 'black';
+        }
+
+        return match ($posicao) {
+            1 => 'gold',
+            2 => 'silver',
+            3 => '#cd7f32',
+            default => 'black',
+        };
+    }
+
+    public function getTopRanking($limit = 10)
+    {
+        return Jogador::find()
+            ->where(['jogo_id' => $this->id])
+            ->orderBy(['pontuacao' => SORT_DESC])
+            ->limit($limit)
+            ->all();
+    }
 }
