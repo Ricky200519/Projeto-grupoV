@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /** @var int $nextNumber */
 
 $this->title = 'Adicionar Pergunta nº ' . $nextNumber . ' ao Jogo ' . $jogo_id;
-$this->registerCssFile("@web/css/create-quiz.css"); // reaproveitando CSS do frontend
+$this->registerCssFile("@web/css/create-quiz.css");
 ?>
 
 <div class="pergunta-create-container p-4 bg-light">
@@ -18,7 +18,7 @@ $this->registerCssFile("@web/css/create-quiz.css"); // reaproveitando CSS do fro
             'model' => $model,
             'jogo_id' => $jogo_id,
             'nextNumber' => $nextNumber,
-            'text' => 'Criar' // botão terá o texto "Criar"
+            'text' => 'Criar'
         ]) ?>
     </div>
 </div>

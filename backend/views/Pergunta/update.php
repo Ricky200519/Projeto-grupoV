@@ -14,8 +14,8 @@ $this->registerCssFile('@web/css/create-quiz.css');
 
         <?= $this->render('form', [
             'model' => $model,
-            'jogo_id' => $model->jogo_id,  // importante
-            'nextNumber' => $model->id,    // apenas para não falhar o _form
+            'jogo_id' => $model->jogo_id,
+            'nextNumber' => $model->id,
             'text' => 'Guardar'
         ]) ?>
     </div>

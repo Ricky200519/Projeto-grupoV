@@ -31,6 +31,10 @@ class RbacController extends Controller
         $quizPlay->description = 'Jogar quizzes';
         $auth->add($quizPlay);
 
+        $viewQuiz = $auth->createPermission('quizView');
+        $viewQuiz->description = 'Visualizar quizzes';
+        $auth->add($viewQuiz);
+
         $quizViewAll = $auth->createPermission('quizViewAll');
         $quizViewAll->description = 'Ver todos os quizzes';
         $auth->add($quizViewAll);
@@ -59,6 +63,7 @@ class RbacController extends Controller
         $auth->addChild($participante, $quizUpdate);
         $auth->addChild($participante, $quizDelete);
         $auth->addChild($participante, $quizPlay);
+        $auth->addChild($participante, $viewQuiz);
 
         $moderador = $auth->createRole('moderador');
         $auth->add($moderador);

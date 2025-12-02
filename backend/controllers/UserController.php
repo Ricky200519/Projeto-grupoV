@@ -115,7 +115,7 @@ class UserController extends Controller
     {
         if ($id == Yii::$app->user->id) {
             Yii::$app->session->setFlash('error', 'Não podes eliminar a tua própria conta.');
-            return $this->redirect(['/site/index']);
+            return $this->redirect(['index']);
         }
 
         $model = $this->findModel($id);
@@ -125,18 +125,24 @@ class UserController extends Controller
             $auth = Yii::$app->authManager;
             $auth->revokeAll($id);
 
-            if ($model->delete()) {
-                Yii::$app->session->setFlash('success',
-                    "Utilizador <strong>{$username}</strong> eliminado com sucesso!"
+            $model->status = 0;
+
+            if ($model->save(false)) {
+                Yii::$app->session->setFlash(
+                    'success',
+                    "Utilizador <strong>{$username}</strong> desativado com sucesso!"
                 );
             } else {
-                Yii::$app->session->setFlash('error',
-                    "Erro ao eliminar o utilizador <strong>{$username}</strong>."
+                Yii::$app->session->setFlash(
+                    'error',
+                    "Erro ao desativar o utilizador <strong>{$username}</strong>."
                 );
             }
+
         } catch (\Exception $e) {
-            Yii::$app->session->setFlash('error',
-                "Erro ao eliminar o utilizador: " . $e->getMessage()
+            Yii::$app->session->setFlash(
+                'error',
+                "Erro ao desativar o utilizador: " . $e->getMessage()
             );
         }
 

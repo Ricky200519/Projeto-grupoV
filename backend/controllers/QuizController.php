@@ -63,12 +63,12 @@ class QuizController extends Controller
         $model = new \common\models\Pergunta();
         $model->jogo_id = $jogo_id;
 
-        // Calcula o número da próxima pergunta
+
         $nextNumber = \common\models\Pergunta::find()->where(['jogo_id' => $jogo_id])->count() + 1;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Yii::$app->session->setFlash('success', 'Pergunta criada com sucesso!');
-            return $this->redirect(['view', 'id' => $jogo_id]); // redireciona para a página do quiz
+            return $this->redirect(['view', 'id' => $jogo_id]);
         }
 
         return $this->render('createPergunta', [

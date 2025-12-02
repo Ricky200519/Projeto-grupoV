@@ -15,12 +15,12 @@ use yii\widgets\ActiveForm;
 
 
 
-    <!-- Campo de texto simples para inserir a pergunta -->
+
     <?= $form->field($model, 'texto')
         ->textInput(['placeholder' => 'Insira a pergunta'])
         ->label('Pergunta') ?>
 
-    <!-- Campo hidden para associar ao jogo -->
+
     <?= Html::activeHiddenInput($model, 'jogo_id', ['value' => $jogo_id]) ?>
 
     <div class="form-group mt-3">

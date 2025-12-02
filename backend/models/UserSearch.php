@@ -20,7 +20,7 @@ class UserSearch extends User
 
     public function search($params)
     {
-        $query = User::find();
+        $query = User::find()->where(['status' => 10]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -40,13 +40,12 @@ class UserSearch extends User
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'status' => $this->status,
         ]);
 
         $query->andFilterWhere(['like', 'username', $this->username])
             ->andFilterWhere(['like', 'email', $this->email]);
 
-
         return $dataProvider;
     }
+
 }
