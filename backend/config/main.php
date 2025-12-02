@@ -78,6 +78,7 @@ return [
             'site/login',
             'site/error',
             'site/logout',
+            'api/*' //remover quando for a fazer commit, senao qualquer um tera acesso
 
         ],
         'rules' => [
