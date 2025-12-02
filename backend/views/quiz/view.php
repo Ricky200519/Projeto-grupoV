@@ -41,7 +41,6 @@ use yii\helpers\Url;
     </table>
 <?php endif; ?>
 
-
 <a href="<?= Url::to(['pergunta/create', 'jogo_id' => $jogo->id]) ?>" class="btn btn-success mt-2">
     Adicionar Pergunta
 </a>

@@ -21,7 +21,7 @@ $recentQuizzes = Jogo::find()->orderBy(['datacriacao' => SORT_DESC])->limit(5)->
 
     <div class="row g-4 mb-4">
 
-
+        <!-- Total Quizzes -->
         <div class="col-md-4">
             <div class="card bg-primary text-dark">
                 <div class="card-body">
@@ -31,7 +31,7 @@ $recentQuizzes = Jogo::find()->orderBy(['datacriacao' => SORT_DESC])->limit(5)->
             </div>
         </div>
 
-
+        <!-- Quizzes Públicos -->
         <div class="col-md-4">
             <div class="card bg-success text-dark">
                 <div class="card-body">
@@ -41,7 +41,7 @@ $recentQuizzes = Jogo::find()->orderBy(['datacriacao' => SORT_DESC])->limit(5)->
             </div>
         </div>
 
-
+        <!-- Quizzes Privados -->
         <div class="col-md-4">
             <div class="card bg-blue text-dark">
                 <div class="card-body">
@@ -51,7 +51,7 @@ $recentQuizzes = Jogo::find()->orderBy(['datacriacao' => SORT_DESC])->limit(5)->
             </div>
         </div>
 
-
+        <!-- Total Utilizadores -->
         <div class="col-md-4 mt-4">
             <div class="card bg-warning text-dark">
                 <div class="card-body">
@@ -63,7 +63,7 @@ $recentQuizzes = Jogo::find()->orderBy(['datacriacao' => SORT_DESC])->limit(5)->
 
     </div>
 
-
+    <!-- Últimos 5 Quizzes em Cards -->
     <h3>Últimos Quizzes Criados</h3>
     <div class="row g-4 mt-2">
         <?php foreach ($recentQuizzes as $quiz): ?>
