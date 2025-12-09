@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Html;
 use common\models\Resposta;
 
@@ -12,8 +13,8 @@ $respostasCorretas = Resposta::find()->where(['pergunta_id' => $pergunta->id, 'c
 $totalCorretas = count($respostasCorretas);
 
 ?>
-<div class="main-card">
-    <div class="resposta-details card p-4 mb-4">
+<div class="main-card bg-white mt-4 border border-primary border-2">
+    <div class="quiz-container card bg-white mt-2 p-5 mx-auto w-100 border border-primary border-2">
         <?= Html::a('← Voltar ao jogo', ['resposta/back-to-game', 'pergunta_id' => $pergunta->id], [
                 'class' => 'text-primary mb-3 d-inline-block'
         ]) ?>

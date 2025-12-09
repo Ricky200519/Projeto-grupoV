@@ -44,7 +44,7 @@ AppAsset::register($this);
 
         <?= Html::csrfMetaTags() ?>
     </head>
-    <body class="d-flex flex-column h-100">
+    <body class="d-flex flex-column min-vh-100 bg-light">
     <?php $this->beginBody() ?>
 
     <header>
@@ -54,8 +54,8 @@ AppAsset::register($this);
         ?>
 
         <div class="container-fluid position-relative p-0">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light px-4 px-lg-5 py-3 py-lg-0 fixed-top">
-                <a href="<?= Url::toRoute(['site/index']) ?>" class="navbar-brand p-0">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light px-4 px-lg-5 py-3 py-lg-0 fixed-top border-bottom border-primary border-1">
+            <a href="<?= Url::toRoute(['site/index']) ?>" class="navbar-brand p-0">
                     <h1 class="text-primary"><i class="fas fa-graduation-cap me-3"></i>LearnQuiz</h1>
                 </a>
 
@@ -98,7 +98,7 @@ AppAsset::register($this);
                     <?php else: ?>
                         <span class="text-white nav-item nav-link disabled fw-bold d-inline-flex align-items-center">
                                 <i class="fa fa-user text-primary me-2"></i>
-                                <span class="text-white"><?= Html::encode(Yii::$app->user->identity->username) ?></span>
+                                <span class="text-secondary"><?= Html::encode(Yii::$app->user->identity->username) ?></span>
                             </span>
 
 
@@ -125,10 +125,7 @@ AppAsset::register($this);
             <?= $content ?>
         </div>
     </main>
-
     <?php $this->endBody() ?>
-    <script src="../../web/js/main.js"></script>
-
     </body>
     </html>
 <?php $this->endPage();

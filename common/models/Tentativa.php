@@ -63,7 +63,7 @@ class Tentativa extends \yii\db\ActiveRecord
 
     public function isAnswered()
     {
-      return OpcaoEscolhida::find()->where(['tentativa_id' => $this->id])->exists();
+        return OpcaoEscolhida::find()->where(['tentativa_id' => $this->id])->exists();
     }
 
     public function getJogador()
@@ -122,8 +122,5 @@ class Tentativa extends \yii\db\ActiveRecord
         }
         return $posicao;
     }
-
-
-
 }
 

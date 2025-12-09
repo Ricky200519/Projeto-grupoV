@@ -27,8 +27,8 @@ $dataProvider = new ArrayDataProvider([
 ]);
 ?>
 
-<div class="container mt-4">
-    <div class="card bg-body shadow-sm p-4">
+<div class="main-card bg-white mt-4 border border-primary border-2">
+    <div class="card bg-white mt-2 p-5 mx-auto w-100 border border-primary border-2">
 
         <?= Html::a('← <span class="text-primary">Voltar para os Meus Jogos</span>', ['jogo/index'], ['class' => 'mb-3 text-secondary d-block']) ?>
 
@@ -63,7 +63,7 @@ $dataProvider = new ArrayDataProvider([
         <div class="row mb-4">
 
             <div class="col-md-4">
-                <div class="card shadow-sm border-0">
+                <div class="card shadow border border-primary border-2">
                     <div class="card-body text-center">
                         <h5 class="text-secondary">Vezes Jogadas</h5>
                         <h2 class="fw-bold text-primary"><?= $tentativas ?></h2>
@@ -72,7 +72,7 @@ $dataProvider = new ArrayDataProvider([
             </div>
 
             <div class="col-md-4">
-                <div class="card shadow-sm border-0">
+                <div class="card shadow border border-primary border-2">
                     <div class="card-body text-center">
                         <h5 class="text-secondary">Melhor Pontuação</h5>
                         <h2 class="fw-bold text-success"><?= $melhorPontuacao ?: '—' ?></h2>
@@ -81,7 +81,7 @@ $dataProvider = new ArrayDataProvider([
             </div>
 
             <div class="col-md-4">
-                <div class="card shadow-sm border-0">
+                <div class="card shadow border border-primary border-2">
                     <div class="card-body text-center">
                         <h5 class="text-secondary">Posição no Ranking</h5>
                         <h2 class="fw-bold <?= $posicao ? 'text-black' : 'text-muted' ?>">

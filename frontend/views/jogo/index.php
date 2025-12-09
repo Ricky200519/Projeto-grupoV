@@ -10,8 +10,9 @@ $this->registerJsFile("@web/js/jogo-index.js", ['depends' => [\yii\web\JqueryAss
 $userId = Yii::$app->user->id;
 
 ?>
-<div class="main-card">
-    <div class="quiz-container card bg-body text-light mt-5 p-5 mx-auto w-100" style="max-width: 1200px;">
+<div class="main-card bg-white border border-primary border-2 mt-4">
+    <div class="quiz-container card bg-white mt-2 p-5 mx-auto w-100 border border-primary border-2"
+         style="max-width: 1200px;">
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="text-primary mb-0"><?= Html::encode($this->title) ?></h2>
