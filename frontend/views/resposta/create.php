@@ -12,8 +12,7 @@ use yii\helpers\Html;
 $this->title = 'Adicionar resposta à pergunta: ' . $pergunta->texto;
 
 ?>
-<div class="resposta-create">
-
+<div class="card bg-white mt-4 p-5 mx-auto w-100 border border-primary border-2">
     <?= $this->render('_form', [
             'model' => $model,
             'pergunta' => $pergunta,
@@ -21,5 +20,4 @@ $this->title = 'Adicionar resposta à pergunta: ' . $pergunta->texto;
             'total' => $total ?? null,
             'isUpdate' => $isUpdate,
     ]) ?>
-
 </div>

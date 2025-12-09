@@ -9,8 +9,8 @@ use yii\helpers\Html;
 $this->title = 'Detalhes do Quiz: ' . $model->titulo;
 $this->registerCssFile("@web/css/quiz-page.css");
 ?>
-<div class="main-card">
-    <div class="quiz-details card p-4 mb-4">
+<div class="main-card bg-white mt-4 border border-primary border-2">
+    <div class="quiz-details card bg-white mt-2 p-5 mx-auto w-100 border border-primary border-2">
 
         <?= Html::a('← <span class="text-primary">Voltar para os Meus Jogos</span>', ['jogo/index'], ['class' => 'mb-3 text-secondary d-block']) ?>
 
@@ -26,11 +26,10 @@ $this->registerCssFile("@web/css/quiz-page.css");
             Criado em: <?= Yii::$app->formatter->asDate($model->datacriacao, 'php:d/m/Y') ?>
             | Autor: <?= Html::encode($model->autor ? $model->autor->username : 'Desconhecido') ?>
         </p>
-
-        <?= Html::a('Adicionar Pergunta', ['pergunta/create', 'jogo_id' => $model->id], [
-                'class' => 'btn btn-primary mb-3',
-                'style' => 'width: auto;'
-        ]) ?>
+        <div>
+            <?= Html::a('Adicionar Pergunta', ['pergunta/create', 'jogo_id' => $model->id], [
+                    'class' => 'btn btn-primary mb-3',
+            ]) ?></div>
 
         <h3 class="text-secondary">Perguntas</h3>
         <?php if (!empty($perguntas)): ?>

@@ -57,6 +57,7 @@ class JogoController extends Controller
             ],
         ];
     }
+
     public function actionIndex()
     {
         Yii::$app->view->title = 'Quizzes';
@@ -79,6 +80,7 @@ class JogoController extends Controller
             'publicos' => $publicos,
         ]);
     }
+
     /**
      * Displays a single Jogo model.
      * @param int $id ID
@@ -97,6 +99,7 @@ class JogoController extends Controller
             'perguntas' => $perguntas,
         ]);
     }
+
     /**
      * Creates a new Jogo model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -122,6 +125,7 @@ class JogoController extends Controller
             'model' => $model,
         ]);
     }
+
     /**
      * Updates an existing Jogo model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -139,6 +143,7 @@ class JogoController extends Controller
             'model' => $model,
         ]);
     }
+
     /**
      * Deletes an existing Jogo model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -215,6 +220,10 @@ class JogoController extends Controller
      */
     public function actionPergunta($tentativa_id, $pergunta_id)
     {
+        if (!Yii::$app->user->can('quizPlay') || Yii::$app->user->identity->isAdmin()) {
+            Yii::$app->session->setFlash('error', 'Não tens permissão para jogar.');
+            return $this->redirect(['index']);
+        }
         $tentativa = Tentativa::findOne($tentativa_id);
         if (!$tentativa || $tentativa->jogador_id != Yii::$app->user->id) {
             throw new NotFoundHttpException('Tentativa inválida.');
@@ -222,6 +231,29 @@ class JogoController extends Controller
         $pergunta = Pergunta::findOne($pergunta_id);
         if (!$pergunta) {
             throw new NotFoundHttpException('Pergunta não encontrada.');
+        }
+        $jaRespondeu = OpcaoEscolhida::find()
+            ->where([
+                'tentativa_id' => $tentativa->id,
+                'pergunta_id' => $pergunta->id
+            ])
+            ->exists();
+        if ($jaRespondeu) {
+            Yii::$app->session->setFlash('warning', 'Já respondeste a esta pergunta!');
+            $proximaPergunta = Pergunta::find()
+                ->where(['jogo_id' => $pergunta->jogo_id])
+                ->andWhere(['>', 'id', $pergunta->id])
+                ->orderBy(['id' => SORT_ASC])
+                ->one();
+            if ($proximaPergunta) {
+                return $this->redirect([
+                    'pergunta',
+                    'tentativa_id' => $tentativa->id,
+                    'pergunta_id' => $proximaPergunta->id
+                ]);
+            } else {
+                return $this->redirect(['finish', 'tentativa_id' => $tentativa->id]);
+            }
         }
         $respostas = $pergunta->respostas;
         $perguntas = Pergunta::find()
@@ -241,25 +273,48 @@ class JogoController extends Controller
             ->andWhere(['>', 'id', $pergunta->id])
             ->orderBy(['id' => SORT_ASC])
             ->one();
+
         $isUltimaPergunta = !$proximaPergunta;
         $proximaPerguntaId = $proximaPergunta ? $proximaPergunta->id : null;
+
         if (Yii::$app->request->isPost) {
-            $respostaEscolhidaId = Yii::$app->request->post('resposta_id');
-            $opcao = new OpcaoEscolhida();
-            $opcao->resposta_id = $respostaEscolhidaId ?: null;
-            $opcao->tentativa_id = $tentativa->id;
-            $opcao->jogador_id = Yii::$app->user->id;
-            $opcao->pergunta_id = $pergunta->id;
-            $opcao->datahora = date('Y-m-d H:i:s');
-            $opcao->save(false);
-            if ($isUltimaPergunta) {
-                return $this->redirect(['finish', 'tentativa_id' => $tentativa->id]);
+            $jaRespondeuPost = OpcaoEscolhida::find()
+                ->where([
+                    'tentativa_id' => $tentativa->id,
+                    'pergunta_id' => $pergunta->id
+                ])
+                ->exists();
+            if ($jaRespondeuPost) {
+                Yii::$app->session->setFlash('error', 'Não podes responder duas vezes à mesma pergunta!');
+                return $this->redirect(['jogo/index']);
             }
-            return $this->redirect([
-                'pergunta',
-                'tentativa_id' => $tentativa->id,
-                'pergunta_id' => $proximaPerguntaId
-            ]);
+            $respostaEscolhidaId = Yii::$app->request->post('resposta_id');
+
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                $opcao = new OpcaoEscolhida();
+                $opcao->resposta_id = $respostaEscolhidaId ?: null;
+                $opcao->tentativa_id = $tentativa->id;
+                $opcao->jogador_id = Yii::$app->user->id;
+                $opcao->pergunta_id = $pergunta->id;
+                $opcao->datahora = date('Y-m-d H:i:s');
+
+                if (!$opcao->save()) {
+                    throw new \Exception('Erro ao guardar resposta');
+                }
+                $transaction->commit();
+                if ($isUltimaPergunta) {
+                    return $this->redirect(['finish', 'tentativa_id' => $tentativa->id]);
+                }
+                return $this->redirect([
+                    'pergunta',
+                    'tentativa_id' => $tentativa->id,
+                    'pergunta_id' => $proximaPerguntaId
+                ]);
+            } catch (\Exception $e) {
+                $transaction->rollBack();
+                return $this->refresh();
+            }
         }
         return $this->render('pergunta', [
             'tentativa' => $tentativa,
@@ -274,6 +329,10 @@ class JogoController extends Controller
 
     public function actionFinish($tentativa_id)
     {
+        if (!Yii::$app->user->can('quizPlay') || Yii::$app->user->identity->isAdmin()) {
+            Yii::$app->session->setFlash('error', 'Não tens permissão para jogar.');
+            return $this->redirect(['index']);
+        }
         $tentativa = \common\models\Tentativa::findOne($tentativa_id);
 
         if (!$tentativa || $tentativa->jogador_id != Yii::$app->user->id) {
@@ -374,6 +433,7 @@ class JogoController extends Controller
 
         return $this->redirect(Yii::$app->request->referrer);
     }
+
     public function actionAdicionarFavorito($jogo_id)
     {
         $userId = Yii::$app->user->id;

@@ -12,7 +12,7 @@ $this->registerCssFile('@web/css/signup.css');
 ?>
 
 <div class="signup-page">
-    <div class="signup-card">
+    <div class="signup-card bg-white border border-primary border-2">
         <h1 class="text-primary"><?= Html::encode($this->title) ?></h1>
         <p class="text-secondary">Please fill out the following fields to sign up:</p>
 

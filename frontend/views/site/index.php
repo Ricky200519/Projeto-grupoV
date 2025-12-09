@@ -9,7 +9,7 @@ use common\models\Jogador;
 
 $this->title = 'LearnQuiz';
 $this->registerCssFile("css/index.css");
-
+usort($publicos, fn($a, $b) => ($b->mediaRating <=> $a->mediaRating));
 function obterPosicaoRanking($jogoId, $userId)
 {
     $ranking = Jogador::find()->where(['jogo_id' => $jogoId])->orderBy(['pontuacao' => SORT_DESC])->all();
@@ -23,8 +23,10 @@ function obterPosicaoRanking($jogoId, $userId)
     return null;
 }
 
+$publicos = array_slice($publicos, 0, 2);
+
 ?>
-<div class="main-card">
+<div class="main-card bg-white border border-primary border-2 mt-4">
     <div class="main-index">
         <h2 class="text-secondary">
             Bem-vindo ao <span class="text-primary"><?= Html::encode($this->title) ?>
@@ -34,7 +36,7 @@ function obterPosicaoRanking($jogoId, $userId)
         </h2>
     </div>
 
-    <div class="quiz-container card bg-body text-light mt-5 p-4 mx-auto w-100">
+    <div class="quiz-container card bg-white text-light mt-3 p-4 mx-auto w-100 border border-primary border-2">
         <h3 class="mb-4 text-primary text-start">Jogo Rápido</h3>
 
         <h5 class="text-secondary">Aqui podes escolher um jogo para jogar rapidamente ou criar o teu próprio jogo!</h5>
@@ -47,7 +49,7 @@ function obterPosicaoRanking($jogoId, $userId)
                class="create-link text-decoration-none"
                data-bs-toggle="<?= Yii::$app->user->isGuest ? 'modal' : '' ?>"
                data-bs-target="<?= Yii::$app->user->isGuest ? '#loginModal' : '' ?>">
-                <div class="card quiz-card create-card text-center d-flex align-items-center justify-content-center"
+                <div class="card quiz-card create-card text-center d-flex align-items-center justify-content-center "
                      style="width: 18rem; cursor:pointer;">
                     <div>
                         <div class="plus-icon">+</div>
@@ -59,8 +61,8 @@ function obterPosicaoRanking($jogoId, $userId)
             <?php foreach ($publicos as $jogo): ?>
                 <?php
                 $numPerguntas = Pergunta::find()->where(['jogo_id' => $jogo->id])->count();
-                $tentativasUsuario = Yii::$app->user->isGuest ? 0 : Tentativa::find()->where(['jogo_id' => $jogo->id, 'jogador_id' => $userId])->count();
-                $posicao = $tentativasUsuario > 0 ? obterPosicaoRanking($jogo->id, $userId) : null;
+                $tentativasUser = Yii::$app->user->isGuest ? 0 : Tentativa::find()->where(['jogo_id' => $jogo->id, 'jogador_id' => $userId])->count();
+                $posicao = $tentativasUser > 0 ? obterPosicaoRanking($jogo->id, $userId) : null;
                 $corMedalha = match ($posicao) {
                     1 => 'gold',
                     2 => 'silver',
@@ -93,8 +95,8 @@ function obterPosicaoRanking($jogoId, $userId)
                                     perguntas</small>
                             </p>
                             <p class="card-text mb-2">
-                                <small class="<?= $tentativasUsuario > 0 ? 'text-primary' : 'text-secondary' ?>">
-                                    <?= $tentativasUsuario > 0 ? 'Já jogaste' : 'Ainda não jogaste este quiz' ?>
+                                <small class="<?= $tentativasUser > 0 ? 'text-primary' : 'text-secondary' ?>">
+                                    <?= $tentativasUser > 0 ? 'Já jogaste' : 'Ainda não jogaste este quiz' ?>
                                 </small>
                             </p>
                             <div class="d-grid">
@@ -130,7 +132,7 @@ function obterPosicaoRanking($jogoId, $userId)
         </div>
     </div>
 </div>
-<footer class="bg-body text-black py-4 mt-3 w-100">
+<footer class="bg-white text-secondary py-4 mt-5 w-100 border border-primary border-2">
     <div class="container d-flex justify-content-between">
         <span>LearnQuiz 2025</span>
         <small><span>Instituto Politécnico Leiria</span></small>
