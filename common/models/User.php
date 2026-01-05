@@ -225,4 +225,10 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->hasMany(Jogo::class, ['autor_id' => 'id']);
     }
 
+    public function getJogosFavoritos()
+    {
+        return $this->hasMany(Jogo::class, ['id' => 'jogo_id'])
+            ->viaTable('favoritos', ['user_id' => 'id']);
+    }
+
 }

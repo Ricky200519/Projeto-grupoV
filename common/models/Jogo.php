@@ -54,11 +54,6 @@ class Jogo extends \yii\db\ActiveRecord
         return $this->hasMany(Pergunta::class, ['jogo_id' => 'id']);
     }
 
-    public function getSalas()
-    {
-        return $this->hasMany(Sala::class, ['jogo_id' => 'id']);
-    }
-
     public function getAutor()
     {
         return $this->hasOne(\common\models\User::class, ['id' => 'autor_id']);
