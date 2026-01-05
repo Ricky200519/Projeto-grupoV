@@ -65,7 +65,10 @@ class JogoController extends Controller
             return $this->redirect(['site/index']);
         }
         $userId = Yii::$app->user->id;
-        $meusJogos = Yii::$app->user->identity->jogos;
+        $meusJogos = Jogo::find()
+            ->where(['autor_id' => $userId])
+            ->orderBy(['datacriacao' => SORT_DESC])
+            ->all();
         $ordenar = Yii::$app->request->get('ordenar', 'nome');
         $query = Jogo::find()
             ->where(['isPublic' => 1])
@@ -458,6 +461,27 @@ class JogoController extends Controller
         }
 
         return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionFavoritos()
+    {
+        if (Yii::$app->user->isGuest) {
+            throw new ForbiddenHttpException('Tens de estar autenticado.');
+        }
+
+        $user = Yii::$app->user->identity;
+
+        $favoritos = $user->getJogosFavoritos()->all();
+
+        $totalJogos = Jogo::find()->count();
+
+        $totalFavoritos = $user->getJogosFavoritos()->count();
+
+        return $this->render('favoritos', [
+            'favoritos' => $favoritos,
+            'totalJogos' => $totalJogos,
+            'totalFavoritos' => $totalFavoritos,
+        ]);
     }
 
     protected function findModel($id)

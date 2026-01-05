@@ -6,22 +6,9 @@ use yii\helpers\Html;
 use common\models\Pergunta;
 use common\models\Tentativa;
 use common\models\Jogador;
-
 $this->title = 'LearnQuiz';
 $this->registerCssFile("css/index.css");
 usort($publicos, fn($a, $b) => ($b->mediaRating <=> $a->mediaRating));
-function obterPosicaoRanking($jogoId, $userId)
-{
-    $ranking = Jogador::find()->where(['jogo_id' => $jogoId])->orderBy(['pontuacao' => SORT_DESC])->all();
-    $pos = 1;
-    foreach ($ranking as $j) {
-        if ($j->user_id == $userId) {
-            return $pos;
-        }
-        $pos++;
-    }
-    return null;
-}
 
 $publicos = array_slice($publicos, 0, 2);
 
@@ -62,7 +49,7 @@ $publicos = array_slice($publicos, 0, 2);
                 <?php
                 $numPerguntas = Pergunta::find()->where(['jogo_id' => $jogo->id])->count();
                 $tentativasUser = Yii::$app->user->isGuest ? 0 : Tentativa::find()->where(['jogo_id' => $jogo->id, 'jogador_id' => $userId])->count();
-                $posicao = $tentativasUser > 0 ? obterPosicaoRanking($jogo->id, $userId) : null;
+                $posicao = $tentativasUser > 0 ? Jogador::obterPosicaoRanking($jogo->id, $userId) : null;
                 $corMedalha = match ($posicao) {
                     1 => 'gold',
                     2 => 'silver',

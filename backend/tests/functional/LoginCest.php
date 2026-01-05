@@ -3,42 +3,43 @@
 namespace backend\tests\functional;
 
 use backend\tests\FunctionalTester;
-use common\fixtures\UserFixture;
 
-/**
- * Class LoginCest
- */
 class LoginCest
 {
-    /**
-     * Load fixtures before db transaction begin
-     * Called in _before()
-     * @see \Codeception\Module\Yii2::_before()
-     * @see \Codeception\Module\Yii2::loadFixtures()
-     * @return array
-     */
-    public function _fixtures()
+    public function _before(FunctionalTester $I)
     {
-        return [
-            'user' => [
-                'class' => UserFixture::class,
-                'dataFile' => codecept_data_dir() . 'login_data.php'
-            ]
-        ];
+        $I->amOnPage('/site/login');
     }
-    
-    /**
-     * @param FunctionalTester $I
-     */
-    public function loginUser(FunctionalTester $I)
+
+    public function loginvalido(FunctionalTester $I)
     {
-        $I->amOnRoute('/site/login');
-        $I->fillField('Username', 'erau');
-        $I->fillField('Password', 'password_0');
+        $I->see('Login', 'h1');
+
+        $I->fillField('LoginForm[username]', 'admin');
+        $I->fillField('LoginForm[password]', 'admin123');
+
         $I->click('login-button');
 
-        $I->see('Logout (erau)', 'form button[type=submit]');
-        $I->dontSeeLink('Login');
-        $I->dontSeeLink('Signup');
+        $I->see('Bem-vindo ao Painel de Controlo!');
+    }
+
+    public function loginInvalido(FunctionalTester $I)
+    {
+        $I->fillField('LoginForm[username]', 'admin');
+        $I->fillField('LoginForm[password]', 'errado');
+
+        $I->click('login-button');
+
+        $I->see('Incorrect username or password.');
+    }
+
+    public function loginSemAcesso(FunctionalTester $I)
+    {
+        $I->fillField('LoginForm[username]', 'participante');
+        $I->fillField('LoginForm[password]', 'participante123');
+
+        $I->click('login-button');
+
+        $I->see('Não tem permissões para aceder ao backend. Apenas administradores e moderadores podem aceder.');
     }
 }

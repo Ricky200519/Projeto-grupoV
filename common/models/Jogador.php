@@ -31,4 +31,21 @@ class Jogador extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Jogo::class, ['id' => 'jogo_id']);
     }
+    public static function obterPosicaoRanking($jogoId, $userId)
+    {
+        $ranking = self::find()
+            ->where(['jogo_id' => $jogoId])
+            ->orderBy(['pontuacao' => SORT_DESC])
+            ->all();
+
+        $pos = 1;
+        foreach ($ranking as $j) {
+            if ($j->user_id == $userId) {
+                return $pos;
+            }
+            $pos++;
+        }
+
+        return null;
+    }
 }

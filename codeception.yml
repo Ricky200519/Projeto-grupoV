@@ -3,6 +3,7 @@ include:
     - common
     - frontend
     - backend
+    - tests
 paths:
     output: console/runtime/output
 settings:
