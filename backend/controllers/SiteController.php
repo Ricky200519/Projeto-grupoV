@@ -81,7 +81,7 @@ class SiteController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             if ($model->login()) {
-                // Verificar permissões de backend
+
                 if (Yii::$app->user->can('admin') || Yii::$app->user->can('moderador')) {
                     return $this->redirect(['index']);
                 } else {

@@ -58,7 +58,7 @@ return [
                     'controller' => ['api/jogo', 'api/pergunta', 'api/resposta'],
                     'pluralize' => false,
                     'extraPatterns' => [
-                        'GET {id}/perguntas' => 'perguntas', //endpoint Master/Detail
+                        'GET {id}/perguntas' => 'perguntas',
                     ],
                 ],
             ],
@@ -78,6 +78,8 @@ return [
             'site/login',
             'site/error',
             'site/logout',
+
+
 
         ],
         'rules' => [
