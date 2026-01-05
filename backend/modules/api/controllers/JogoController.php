@@ -3,16 +3,37 @@
 namespace backend\modules\api\controllers;
 
 use yii\rest\ActiveController;
+use yii\filters\auth\QueryParamAuth;
 use common\models\Jogo;
 
 class JogoController extends ActiveController
 {
     public $modelClass = Jogo::class;
 
-    public function actionPerguntas($id)
+    public function behaviors()
     {
-        return \common\models\Pergunta::find()->where(['jogo_id' => $id])->all();
+        $behaviors = parent::behaviors();
+        $behaviors['authenticator'] = [
+            'class' => QueryParamAuth::className(),
+            'only' => ['index', ], // Apenas para o GET
+            // 'auth' => [$this, 'auth']   // da erro ao na web
+
+        ];
+        return $behaviors;
     }
+
+
+    public function auth($username, $password)
+    {
+        $user = \app\models\User::findByUsername($username);
+        if ($user && $user->validatePassword($password))
+        {
+            return $user;
+        }
+        throw new \yii\web\ForbiddenHttpException('No authentication'); //403
+    }
+
+
 
 
 }
