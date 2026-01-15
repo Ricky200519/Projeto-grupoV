@@ -28,13 +28,13 @@ class UserController extends ActiveController
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
             'class' => QueryParamAuth::className(),
-            'except' => ['index', ], // Apenas para o GET
-            // 'auth' => [$this, 'auth']   // da erro ao na web
+            'except' => ['index', 'view'],
 
         ];
         return $behaviors;
     }
 
+    //metodo autenticação que verifica se o user existe e a password esta correta
     public function auth($username, $password)
     {
         $user = \app\models\User::findByUsername($username);
@@ -42,7 +42,7 @@ class UserController extends ActiveController
         {
             return $user;
         }
-        throw new \yii\web\ForbiddenHttpException('No authentication'); //403
+        throw new \yii\web\ForbiddenHttpException('Sem autenticacao');
     }
 
 
