@@ -14,6 +14,9 @@ use yii\web\NotFoundHttpException;
 use common\models\User;
 use common\models\Jogador;
 use common\models\Rating;
+use PhpMqtt\Client\MqttClient;
+use PhpMqtt\Client\ConnectionSettings;
+
 
 class JogoController extends Controller
 {
@@ -111,19 +114,41 @@ class JogoController extends Controller
     public function actionCreate()
     {
         $model = new Jogo();
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post())) {
-                // Definir dados automáticos
-                $model->autor_id = Yii::$app->user->id;
-                $model->datacriacao = date('Y-m-d H:i:s');
-                if ($model->save()) {
-                    Yii::$app->session->setFlash('success', 'Quiz criado com sucesso!');
-                    return $this->redirect(['index']);
+
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            // Definir dados automáticos
+            $model->autor_id = Yii::$app->user->id;
+            $model->datacriacao = date('Y-m-d H:i:s');
+
+            if ($model->save()) {
+
+                // 🔔 PUBLICAR NO MQTT
+                try {
+                    $mqtt = new MqttClient('localhost', 1883, 'yii2-publisher-' . uniqid());
+                    $settings = (new ConnectionSettings())->setKeepAliveInterval(60);
+                    $mqtt->connect($settings, true);
+
+                    $mensagem = json_encode([
+                        'evento' => 'gameCreated',
+                        'id' => $model->id,
+                        'titulo' => $model->titulo
+                    ]);
+
+                    $mqtt->publish('games/updates', $mensagem, 0);
+                    $mqtt->disconnect();
+
+                    Yii::info("Mensagem MQTT publicada: $mensagem");
+                } catch (\Exception $e) {
+                    Yii::error("Erro ao publicar MQTT: " . $e->getMessage());
                 }
+
+                Yii::$app->session->setFlash('success', 'Quiz criado com sucesso!');
+                return $this->redirect(['index']);
             }
         } else {
             $model->loadDefaultValues();
         }
+
         return $this->render('create', [
             'model' => $model,
         ]);

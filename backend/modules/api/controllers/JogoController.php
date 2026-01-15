@@ -15,9 +15,7 @@ class JogoController extends ActiveController
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
             'class' => QueryParamAuth::className(),
-            'only' => ['index', ], // Apenas para o GET
-            // 'auth' => [$this, 'auth']   // da erro ao na web
-
+            'except' => ['index', 'view' ],
         ];
         return $behaviors;
     }
@@ -30,7 +28,7 @@ class JogoController extends ActiveController
         {
             return $user;
         }
-        throw new \yii\web\ForbiddenHttpException('No authentication'); //403
+        throw new \yii\web\ForbiddenHttpException('Sem autenticação');
     }
 
 
