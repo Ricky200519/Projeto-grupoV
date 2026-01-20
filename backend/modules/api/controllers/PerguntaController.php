@@ -2,9 +2,12 @@
 
 namespace backend\modules\api\controllers;
 
+use common\models\Resposta;
 use yii\rest\ActiveController;
-use yii\filters\auth\QueryParamAuth;
+use yii\filters\ContentNegotiator;
+use yii\web\Response;
 use common\models\Pergunta;
+use yii\web\NotFoundHttpException;
 
 class PerguntaController extends ActiveController
 {
@@ -13,22 +16,26 @@ class PerguntaController extends ActiveController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        $behaviors['authenticator'] = [
-            'class' => QueryParamAuth::className(),
-            'except' => ['index', 'view'],
 
+        $behaviors['contentNegotiator'] = [
+            'class' => ContentNegotiator::class,
+            'formats' => [
+                'application/json' => Response::FORMAT_JSON,
+            ],
         ];
         return $behaviors;
     }
 
-
-    public function auth($username, $password)
+    public function actionRespostas($id)
     {
-        $user = \app\models\User::findByUsername($username);
-        if ($user && $user->validatePassword($password))
-        {
-            return $user;
+        $pergunta = Pergunta::findOne($id);
+
+        if ($pergunta === null) {
+            throw new NotFoundHttpException('Pergunta não encontrada');
         }
-        throw new \yii\web\ForbiddenHttpException('Sem autenticação');
+
+        return resposta::find()
+            ->where(['pergunta_id' => $id])
+            ->all();
     }
 }

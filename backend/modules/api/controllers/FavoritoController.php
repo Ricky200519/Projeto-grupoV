@@ -2,33 +2,34 @@
 
 namespace backend\modules\api\controllers;
 
-use yii\rest\ActiveController;
-use yii\filters\auth\QueryParamAuth;
+use yii\rest\Controller; // não ActiveController
+use yii\filters\ContentNegotiator;
+use yii\web\Response;
 use common\models\Favoritos;
 
-class FavoritoController extends ActiveController
+class FavoritoController extends Controller
 {
-    public $modelClass = Favoritos::class;
-
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        $behaviors['authenticator'] = [
-            'class' => QueryParamAuth::className(),
-            'except' => ['index', 'view' ],
 
+        $behaviors['contentNegotiator'] = [
+            'class' => ContentNegotiator::class,
+            'formats' => [
+                'application/json' => Response::FORMAT_JSON,
+            ],
         ];
+
         return $behaviors;
     }
 
-
-    public function auth($username, $password)
+    public function actionIndex()
     {
-        $user = \app\models\User::findByUsername($username);
-        if ($user && $user->validatePassword($password))
-        {
-            return $user;
-        }
-        throw new \yii\web\ForbiddenHttpException('Sem autenticação');
+        return Favoritos::find()->all();
+    }
+
+    public function actionUser($userId)
+    {
+        return Favoritos::find()->where(['user_id' => $userId])->all();
     }
 }

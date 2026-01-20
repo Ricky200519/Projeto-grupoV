@@ -2,9 +2,9 @@
 
 namespace backend\modules\api\controllers;
 
-
 use yii\rest\ActiveController;
-use yii\filters\auth\QueryParamAuth;
+use yii\filters\ContentNegotiator;
+use yii\web\Response;
 use common\models\Resposta;
 
 class RespostaController extends ActiveController
@@ -14,23 +14,14 @@ class RespostaController extends ActiveController
     public function behaviors()
     {
         $behaviors = parent::behaviors();
-        $behaviors['authenticator'] = [
-            'class' => QueryParamAuth::className(),
-            'except' => ['index', 'view' ],
 
-
+        $behaviors['contentNegotiator'] = [
+            'class' => ContentNegotiator::class,
+            'formats' => [
+                'application/json' => Response::FORMAT_JSON,
+            ],
         ];
+
         return $behaviors;
-    }
-
-
-    public function auth($username, $password)
-    {
-        $user = \app\models\User::findByUsername($username);
-        if ($user && $user->validatePassword($password))
-        {
-            return $user;
-        }
-        throw new \yii\web\ForbiddenHttpException('Sem autenticacao');
     }
 }
