@@ -57,7 +57,6 @@ class SignupForm extends Model
         $user->generateEmailVerificationToken();
 
         if ($user->save()) {
-            // 🔽 CORREÇÃO: Atribuir role 'participante' em vez de 'author'
             $auth = \Yii::$app->authManager;
             $participanteRole = $auth->getRole('participante');
 

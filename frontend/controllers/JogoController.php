@@ -14,6 +14,9 @@ use yii\web\NotFoundHttpException;
 use common\models\User;
 use common\models\Jogador;
 use common\models\Rating;
+use PhpMqtt\Client\MqttClient;
+use PhpMqtt\Client\ConnectionSettings;
+
 
 class JogoController extends Controller
 {
@@ -57,6 +60,7 @@ class JogoController extends Controller
             ],
         ];
     }
+
     public function actionIndex()
     {
         Yii::$app->view->title = 'Quizzes';
@@ -64,7 +68,10 @@ class JogoController extends Controller
             return $this->redirect(['site/index']);
         }
         $userId = Yii::$app->user->id;
-        $meusJogos = Yii::$app->user->identity->jogos;
+        $meusJogos = Jogo::find()
+            ->where(['autor_id' => $userId])
+            ->orderBy(['datacriacao' => SORT_DESC])
+            ->all();
         $ordenar = Yii::$app->request->get('ordenar', 'nome');
         $query = Jogo::find()
             ->where(['isPublic' => 1])
@@ -79,6 +86,7 @@ class JogoController extends Controller
             'publicos' => $publicos,
         ]);
     }
+
     /**
      * Displays a single Jogo model.
      * @param int $id ID
@@ -97,6 +105,7 @@ class JogoController extends Controller
             'perguntas' => $perguntas,
         ]);
     }
+
     /**
      * Creates a new Jogo model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -105,23 +114,46 @@ class JogoController extends Controller
     public function actionCreate()
     {
         $model = new Jogo();
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post())) {
-                // Definir dados automáticos
-                $model->autor_id = Yii::$app->user->id;
-                $model->datacriacao = date('Y-m-d H:i:s');
-                if ($model->save()) {
-                    Yii::$app->session->setFlash('success', 'Quiz criado com sucesso!');
-                    return $this->redirect(['index']);
+
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            // Definir dados automáticos
+            $model->autor_id = Yii::$app->user->id;
+            $model->datacriacao = date('Y-m-d H:i:s');
+
+            if ($model->save()) {
+
+                // 🔔 PUBLICAR NO MQTT
+                try {
+                    $mqtt = new MqttClient('localhost', 1883, 'yii2-publisher-' . uniqid());
+                    $settings = (new ConnectionSettings())->setKeepAliveInterval(60);
+                    $mqtt->connect($settings, true);
+
+                    $mensagem = json_encode([
+                        'evento' => 'gameCreated',
+                        'id' => $model->id,
+                        'titulo' => $model->titulo
+                    ]);
+
+                    $mqtt->publish('games/updates', $mensagem, 0);
+                    $mqtt->disconnect();
+
+                    Yii::info("Mensagem MQTT publicada: $mensagem");
+                } catch (\Exception $e) {
+                    Yii::error("Erro ao publicar MQTT: " . $e->getMessage());
                 }
+
+                Yii::$app->session->setFlash('success', 'Quiz criado com sucesso!');
+                return $this->redirect(['index']);
             }
         } else {
             $model->loadDefaultValues();
         }
+
         return $this->render('create', [
             'model' => $model,
         ]);
     }
+
     /**
      * Updates an existing Jogo model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -139,6 +171,7 @@ class JogoController extends Controller
             'model' => $model,
         ]);
     }
+
     /**
      * Deletes an existing Jogo model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -215,6 +248,10 @@ class JogoController extends Controller
      */
     public function actionPergunta($tentativa_id, $pergunta_id)
     {
+        if (!Yii::$app->user->can('quizPlay') || Yii::$app->user->identity->isAdmin()) {
+            Yii::$app->session->setFlash('error', 'Não tens permissão para jogar.');
+            return $this->redirect(['index']);
+        }
         $tentativa = Tentativa::findOne($tentativa_id);
         if (!$tentativa || $tentativa->jogador_id != Yii::$app->user->id) {
             throw new NotFoundHttpException('Tentativa inválida.');
@@ -222,6 +259,29 @@ class JogoController extends Controller
         $pergunta = Pergunta::findOne($pergunta_id);
         if (!$pergunta) {
             throw new NotFoundHttpException('Pergunta não encontrada.');
+        }
+        $jaRespondeu = OpcaoEscolhida::find()
+            ->where([
+                'tentativa_id' => $tentativa->id,
+                'pergunta_id' => $pergunta->id
+            ])
+            ->exists();
+        if ($jaRespondeu) {
+            Yii::$app->session->setFlash('warning', 'Já respondeste a esta pergunta!');
+            $proximaPergunta = Pergunta::find()
+                ->where(['jogo_id' => $pergunta->jogo_id])
+                ->andWhere(['>', 'id', $pergunta->id])
+                ->orderBy(['id' => SORT_ASC])
+                ->one();
+            if ($proximaPergunta) {
+                return $this->redirect([
+                    'pergunta',
+                    'tentativa_id' => $tentativa->id,
+                    'pergunta_id' => $proximaPergunta->id
+                ]);
+            } else {
+                return $this->redirect(['finish', 'tentativa_id' => $tentativa->id]);
+            }
         }
         $respostas = $pergunta->respostas;
         $perguntas = Pergunta::find()
@@ -241,25 +301,48 @@ class JogoController extends Controller
             ->andWhere(['>', 'id', $pergunta->id])
             ->orderBy(['id' => SORT_ASC])
             ->one();
+
         $isUltimaPergunta = !$proximaPergunta;
         $proximaPerguntaId = $proximaPergunta ? $proximaPergunta->id : null;
+
         if (Yii::$app->request->isPost) {
-            $respostaEscolhidaId = Yii::$app->request->post('resposta_id');
-            $opcao = new OpcaoEscolhida();
-            $opcao->resposta_id = $respostaEscolhidaId ?: null;
-            $opcao->tentativa_id = $tentativa->id;
-            $opcao->jogador_id = Yii::$app->user->id;
-            $opcao->pergunta_id = $pergunta->id;
-            $opcao->datahora = date('Y-m-d H:i:s');
-            $opcao->save(false);
-            if ($isUltimaPergunta) {
-                return $this->redirect(['finish', 'tentativa_id' => $tentativa->id]);
+            $jaRespondeuPost = OpcaoEscolhida::find()
+                ->where([
+                    'tentativa_id' => $tentativa->id,
+                    'pergunta_id' => $pergunta->id
+                ])
+                ->exists();
+            if ($jaRespondeuPost) {
+                Yii::$app->session->setFlash('error', 'Não podes responder duas vezes à mesma pergunta!');
+                return $this->redirect(['jogo/index']);
             }
-            return $this->redirect([
-                'pergunta',
-                'tentativa_id' => $tentativa->id,
-                'pergunta_id' => $proximaPerguntaId
-            ]);
+            $respostaEscolhidaId = Yii::$app->request->post('resposta_id');
+
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                $opcao = new OpcaoEscolhida();
+                $opcao->resposta_id = $respostaEscolhidaId ?: null;
+                $opcao->tentativa_id = $tentativa->id;
+                $opcao->jogador_id = Yii::$app->user->id;
+                $opcao->pergunta_id = $pergunta->id;
+                $opcao->datahora = date('Y-m-d H:i:s');
+
+                if (!$opcao->save()) {
+                    throw new \Exception('Erro ao guardar resposta');
+                }
+                $transaction->commit();
+                if ($isUltimaPergunta) {
+                    return $this->redirect(['finish', 'tentativa_id' => $tentativa->id]);
+                }
+                return $this->redirect([
+                    'pergunta',
+                    'tentativa_id' => $tentativa->id,
+                    'pergunta_id' => $proximaPerguntaId
+                ]);
+            } catch (\Exception $e) {
+                $transaction->rollBack();
+                return $this->refresh();
+            }
         }
         return $this->render('pergunta', [
             'tentativa' => $tentativa,
@@ -274,6 +357,10 @@ class JogoController extends Controller
 
     public function actionFinish($tentativa_id)
     {
+        if (!Yii::$app->user->can('quizPlay') || Yii::$app->user->identity->isAdmin()) {
+            Yii::$app->session->setFlash('error', 'Não tens permissão para jogar.');
+            return $this->redirect(['index']);
+        }
         $tentativa = \common\models\Tentativa::findOne($tentativa_id);
 
         if (!$tentativa || $tentativa->jogador_id != Yii::$app->user->id) {
@@ -374,6 +461,7 @@ class JogoController extends Controller
 
         return $this->redirect(Yii::$app->request->referrer);
     }
+
     public function actionAdicionarFavorito($jogo_id)
     {
         $userId = Yii::$app->user->id;
@@ -398,6 +486,27 @@ class JogoController extends Controller
         }
 
         return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionFavoritos()
+    {
+        if (Yii::$app->user->isGuest) {
+            throw new ForbiddenHttpException('Tens de estar autenticado.');
+        }
+
+        $user = Yii::$app->user->identity;
+
+        $favoritos = $user->getJogosFavoritos()->all();
+
+        $totalJogos = Jogo::find()->count();
+
+        $totalFavoritos = $user->getJogosFavoritos()->count();
+
+        return $this->render('favoritos', [
+            'favoritos' => $favoritos,
+            'totalJogos' => $totalJogos,
+            'totalFavoritos' => $totalFavoritos,
+        ]);
     }
 
     protected function findModel($id)

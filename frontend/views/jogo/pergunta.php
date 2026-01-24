@@ -20,66 +20,67 @@ $corretaId = $correta ? $correta->id : 'null';
 $tempoLimite = (int)$pergunta->tempolimite;
 $pontosPergunta = (int)$pergunta->pontosvalor;
 ?>
+<div class="main-card bg-white mt-4 border border-primary border-2">
+    <div class="card bg-white mt-2 p-3 mx-auto w-100 border border-primary border-2"
+         style="max-width: 850px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem;">
 
-<div class="card bg-body p-4 mt-5"
-     style="max-width: 850px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem;">
-
-    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-        <div class="progress my-progress w-100" style="height: 1.5rem; border-radius: 0.75rem;">
-            <div class="progress-bar bg-primary" role="progressbar"
-                 style="width: 0%; transition: width 0.8s;">
-                0 / <?= $totalPerguntas ?>
-            </div>
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; position: relative;">
-            <div class="badge bg-primary score-box"
-                 style="font-size: 1.25rem; padding: 0.75rem 1rem; position: relative;">
-                Pontos: <span id="pontosTotais"><?= $tentativa->getPontosAteAgora() ?></span>
-                <span id="pontosGanhos" style="position: absolute; bottom: -1.5rem; left: 50%; transform: translateX(-50%);
-            font-size: 1rem; color: #28a745; opacity: 0; transition: all 0.8s;">+0</span>
-            </div>
-        </div>
-    </div>
-
-    <h2 class="text-primary mb-3 text-center">
-        <?= Html::encode($pergunta->texto) ?>
-    </h2>
-
-    <div id="timerCircle">
-        <div id="timerText" class="text-secondary"><?= $tempoLimite ?></div>
-    </div>
-
-    <?php $form = ActiveForm::begin([
-            'id' => 'respostaForm',
-            'method' => 'post',
-            'action' => Url::to(['jogo/pergunta', 'tentativa_id' => $tentativa->id, 'pergunta_id' => $pergunta->id])
-    ]); ?>
-
-    <?= Html::hiddenInput('resposta_id', '', ['id' => 'resposta_id_input']); ?>
-
-    <div class="row g-3">
-        <?php foreach ($respostas as $resposta): ?>
-            <div class="col-md-6">
-                <div class="card resposta-card p-3 mb-3 border cursor-pointer"
-                     id="card-resposta-<?= $resposta->id ?>"
-                     data-resposta-id="<?= $resposta->id ?>"
-                     style="transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;"
-                     onmouseover="this.classList.add('border-primary', 'shadow-lg'); this.style.transform='scale(1.03)';"
-                     onmouseout="this.classList.remove('border-primary', 'shadow-lg'); this.style.transform='scale(1)';"
-                     onclick="selectAnswer(<?= $resposta->id ?>)">
-                    <strong><?= Html::encode($resposta->texto) ?></strong>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <div class="progress my-progress w-100" style="height: 1.5rem; border-radius: 0.75rem;">
+                <div class="progress-bar bg-primary" role="progressbar"
+                     style="width: 0%; transition: width 0.8s;">
+                    0 / <?= $totalPerguntas ?>
                 </div>
             </div>
-        <?php endforeach; ?>
+
+            <div style="display: flex; justify-content: flex-end; position: relative;">
+                <div class="badge bg-primary score-box"
+                     style="font-size: 1.25rem; padding: 0.75rem 1rem; position: relative;">
+                    Pontos: <span id="pontosTotais"><?= $tentativa->getPontosAteAgora() ?></span>
+                    <span id="pontosGanhos" style="position: absolute; bottom: -1.5rem; left: 50%; transform: translateX(-50%);
+            font-size: 1rem; color: #28a745; opacity: 0; transition: all 0.8s;">+0</span>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="text-primary mb-3 text-center">
+            <?= Html::encode($pergunta->texto) ?>
+        </h2>
+
+        <div id="timerCircle">
+            <div id="timerText" class="text-secondary"><?= $tempoLimite ?></div>
+        </div>
+
+        <?php $form = ActiveForm::begin([
+                'id' => 'respostaForm',
+                'method' => 'post',
+                'action' => Url::to(['jogo/pergunta', 'tentativa_id' => $tentativa->id, 'pergunta_id' => $pergunta->id])
+        ]); ?>
+
+        <?= Html::hiddenInput('resposta_id', '', ['id' => 'resposta_id_input']); ?>
+
+        <div class="row g-3">
+            <?php foreach ($respostas as $resposta): ?>
+                <div class="col-md-6">
+                    <div class="card resposta-card p-3 mb-3 border cursor-pointer border-primary border-2"
+                         id="card-resposta-<?= $resposta->id ?>"
+                         data-resposta-id="<?= $resposta->id ?>"
+                         style="transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;"
+                         onmouseover="this.classList.add('shadow-lg'); this.style.transform='scale(1.03)';"
+                         onmouseout="this.classList.remove('shadow-lg'); this.style.transform='scale(1)';"
+                         onclick="selectAnswer(<?= $resposta->id ?>)">
+                        <strong><?= Html::encode($resposta->texto) ?></strong>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <button type="button" class="btn btn-primary mt-3"
+                id="submitBtn" onclick="enviarResposta()" disabled>
+            Submeter Resposta
+        </button>
+
+        <?php ActiveForm::end(); ?>
     </div>
-
-    <button type="button" class="btn btn-primary mt-3"
-            id="submitBtn" onclick="enviarResposta()" disabled>
-        Submeter Resposta
-    </button>
-
-    <?php ActiveForm::end(); ?>
 </div>
 
 <script>

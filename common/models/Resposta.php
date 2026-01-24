@@ -1,4 +1,5 @@
 <?php
+
 namespace common\models;
 
 use Yii;
@@ -18,11 +19,33 @@ class Resposta extends \yii\db\ActiveRecord
             [['texto'], 'string', 'max' => 255],
 
             [['pergunta_id'], 'exist', 'skipOnError' => true, 'targetClass' => Pergunta::class, 'targetAttribute' => ['pergunta_id' => 'id']],
-
             ['correta', 'validateCorreta'],
             ['texto', 'validateTotalRespostas'],
         ];
     }
+
+    public function beforeValidate()
+    {
+        if (!parent::beforeValidate()) {
+            return false;
+        }
+        if (!$this->pergunta_id) {
+            return true;
+        }
+        $total = self::find()
+            ->where(['pergunta_id' => $this->pergunta_id])
+            ->andWhere(['<>', 'id', $this->id])
+            ->count();
+        $existeCorreta = self::find()
+            ->where(['pergunta_id' => $this->pergunta_id, 'correta' => 1])
+            ->andWhere(['<>', 'id', $this->id])
+            ->exists();
+        if ($this->isNewRecord && $total == 3 && !$existeCorreta) {
+            $this->correta = 1;
+        }
+        return true;
+    }
+
 
     public function validateCorreta($attribute, $params)
     {
@@ -31,12 +54,12 @@ class Resposta extends \yii\db\ActiveRecord
                 ->where(['pergunta_id' => $this->pergunta_id, 'correta' => 1])
                 ->andWhere(['<>', 'id', $this->id])
                 ->exists();
-
             if ($existe) {
                 $this->addError($attribute, 'Já existe uma resposta correta nesta pergunta.');
             }
         }
     }
+
 
     public function validateTotalRespostas($attribute, $params)
     {

@@ -110,10 +110,6 @@ class PerguntaController extends Controller
     }
 
 
-
-
-
-
     /**
      * Updates an existing Pergunta model.
      * If update is successful, the browser will be redirected to the 'view' page.

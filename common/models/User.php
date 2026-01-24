@@ -7,6 +7,8 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use yii\filters\auth\QueryParamAuth;
+
 
 /**
  * User model
@@ -87,7 +89,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+        return static::findOne(['auth_key' => $token, 'status' => self::STATUS_ACTIVE]);
     }
 
     public static function findByUsername($username)
@@ -107,7 +109,8 @@ class User extends ActiveRecord implements IdentityInterface
         ]);
     }
 
-    public static function findByVerificationToken($token) {
+    public static function findByVerificationToken($token)
+    {
         return static::findOne([
             'verification_token' => $token,
             'status' => self::STATUS_INACTIVE
@@ -120,7 +123,7 @@ class User extends ActiveRecord implements IdentityInterface
             return false;
         }
 
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
+        $timestamp = (int)substr($token, strrpos($token, '_') + 1);
         $expire = Yii::$app->params['user.passwordResetTokenExpire'];
         return $timestamp + $expire >= time();
     }
@@ -203,6 +206,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return Yii::$app->authManager->getRolesByUser($this->id)['admin'] ?? false;
     }
+
     /**
      * Gets query for [[Jogadors]].
      *
@@ -221,6 +225,12 @@ class User extends ActiveRecord implements IdentityInterface
     public function getJogos()
     {
         return $this->hasMany(Jogo::class, ['autor_id' => 'id']);
+    }
+
+    public function getJogosFavoritos()
+    {
+        return $this->hasMany(Jogo::class, ['id' => 'jogo_id'])
+            ->viaTable('favoritos', ['user_id' => 'id']);
     }
 
 }

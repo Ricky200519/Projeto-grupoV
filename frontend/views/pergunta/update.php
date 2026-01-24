@@ -11,8 +11,8 @@ $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' 
 $this->params['breadcrumbs'][] = 'Update';
 $this->registerCssFile('@web/css/create-quiz.css');
 ?>
-<div class="pergupdate-container bg-light">
-    <div class="pergupdate-card">
+<div class="main-card bg-white mt-4 border border-primary border-2">
+    <div class="card bg-white mt-2 p-5 mx-auto w-100 border border-primary border-2">
         <h1 class="text-primary"><?= Html::encode($this->title) ?></h1>
 
         <?= $this->render('_form', [

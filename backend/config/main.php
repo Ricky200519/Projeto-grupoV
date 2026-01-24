@@ -20,13 +20,19 @@ return [
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
         ],
+
         'request' => [
             'csrfParam' => '_csrf-backend',
             'enableCsrfValidation' => false,
             'parsers' => [
                 'application/json' => 'yii\web\JsonParser',
-            ]
+            ],
         ],
+        'response' => [
+            'format' => yii\web\Response::FORMAT_JSON,
+            'charset' => 'UTF-8',
+        ],
+
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
@@ -51,17 +57,28 @@ return [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'enableStrictParsing' => false,
+            'enableStrictParsing' => true,
             'rules' => [
                 [
                     'class' => 'yii\rest\UrlRule',
-                    'controller' => ['api/jogo', 'api/pergunta', 'api/resposta'],
+                    'controller' => ['api/jogo', 'api/pergunta', 'api/resposta', 'api/user'],
                     'pluralize' => false,
                     'extraPatterns' => [
-                        'GET {id}/perguntas' => 'perguntas', //endpoint Master/Detail
+                        'GET {id}/perguntas' => 'perguntas',
                     ],
                 ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => ['api/pergunta'],
+                    'pluralize' => false,
+                    'extraPatterns' => [
+                        'GET {id}/respostas' => 'respostas',
+                    ],
+                ],
+                'api/favorito' => 'api/favorito/index',
+                'api/favorito/<userId:\d+>' => 'api/favorito/user',
             ],
+
         ],
 
         'view' => [
@@ -78,7 +95,7 @@ return [
             'site/login',
             'site/error',
             'site/logout',
-
+            'api/*',
         ],
         'rules' => [
             [

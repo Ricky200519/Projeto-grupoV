@@ -70,17 +70,22 @@ $this->registerCssFile("@web/css/bootstrap.min.css");
                 </div>
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-                        <li class="nav-item">
-                            <a href="<?= Url::to(['/site/index']) ?>" class="nav-link text-primary">
-                                <i class=" fas fa-tachometer-alt"></i>
-                                <p>Painel</p>
-                            </a>
-                        </li>
+
+
                         <?php if (Yii::$app->user->can('admin')): ?>
                             <li class="nav-item">
                                 <a href="<?= Url::to(['/user/index']) ?>" class="nav-link text-primary">
                                     <i class="nav-icon fas fa-users"></i>
                                     <p>Utilizadores</p>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+
+                        <?php if (Yii::$app->user->can('admin')): ?>
+                            <li class="nav-item">
+                                <a href="<?= Url::to(['/quiz/index']) ?>" class="nav-link text-primary">
+                                    <i class="nav-icon fas fa-users"></i>
+                                    <p>Gerir Quizzes</p>
                                 </a>
                             </li>
                         <?php endif; ?>

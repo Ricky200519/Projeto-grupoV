@@ -44,7 +44,6 @@ class TestController extends Controller
             if ($user->save()) {
                 echo "Utilizador {$userData['username']} criado com sucesso!\n";
 
-                // Atribuir role
                 $this->assignRole($user->id, $userData['role']);
             } else {
                 echo "Erro ao criar utilizador {$userData['username']}: " . implode(', ', $user->getFirstErrors()) . "\n";

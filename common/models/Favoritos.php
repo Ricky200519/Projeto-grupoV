@@ -75,8 +75,4 @@ class Favoritos extends \yii\db\ActiveRecord
     {
         return self::find()->where(['user_id' => $userId, 'jogo_id' => $jogoId])->exists();
     }
-
-
-
-
 }

@@ -1,11 +1,10 @@
 body {
-    background-color: #787878;
+    background-color: #D1D1D1;
     margin: 0;
     padding: 0;
 }
 
 .main-card{
-    background-color:#D1D1D1;
     padding: 40px 50px;
     border-radius: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);

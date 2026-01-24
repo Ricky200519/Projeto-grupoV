@@ -105,7 +105,6 @@ class RespostaController extends Controller
         $jogo_id = $pergunta->jogo_id;
         $total = Resposta::find()->where(['pergunta_id' => $pergunta_id])->count();
         $existeCorreta = Resposta::find()->where(['pergunta_id' => $pergunta_id, 'correta' => 1])->exists();
-
         if ($total >= 4) {
             Yii::$app->session->setFlash('error', 'Esta pergunta já tem 4 respostas.');
             return $this->redirect(['view', 'pergunta_id' => $pergunta_id]);
@@ -115,10 +114,15 @@ class RespostaController extends Controller
         $model->pergunta_id = $pergunta_id;
 
         if ($model->load(Yii::$app->request->post())) {
+            $total = Resposta::find()->where(['pergunta_id' => $pergunta_id])->count();
+            $existeCorreta = Resposta::find()->where(['pergunta_id' => $pergunta_id, 'correta' => 1])->exists();
 
             if ($model->correta == 1 && $existeCorreta) {
                 Yii::$app->session->setFlash('error', 'Já existe uma resposta correta nesta pergunta.');
                 $model->correta = 0;
+            }
+            if ($total == 3 && !$existeCorreta) {
+                $model->correta = 1;
             }
 
             if ($model->save()) {
@@ -166,6 +170,7 @@ class RespostaController extends Controller
     {
         $model = $this->findModel($id);
         $pergunta = $model->pergunta;
+        $total = Resposta::find()->where(['pergunta_id' => $pergunta->id])->count();
         $jogo_id = $pergunta->jogo_id;
 
         $total = null;
@@ -178,6 +183,7 @@ class RespostaController extends Controller
             'model' => $model,
             'pergunta' => $model->pergunta,
             'jogo_id' => $model->pergunta->jogo_id,
+            'total' => $total,
             'isUpdate' => true,
         ]);
     }
@@ -193,7 +199,6 @@ class RespostaController extends Controller
     {
         $model = $this->findModel($id);
         $pergunta_id = $model->pergunta_id;
-
         $model->delete();
 
         return $this->redirect(['resposta/view', 'pergunta_id' => $pergunta_id]);

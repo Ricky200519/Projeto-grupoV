@@ -3,22 +3,26 @@
 namespace backend\modules\api\controllers;
 
 use yii\rest\ActiveController;
-use yii\web\Controller;
+use yii\filters\ContentNegotiator;
+use yii\web\Response;
 use common\models\User;
 
-/**
- * Default controller for the `api` module
- */
 class UserController extends ActiveController
 {
     public $modelClass = User::class;
 
-    /**
-     * Renders the index view for the module
-     * @return string
-     */
-    public function actionIndex()
+    public function behaviors()
     {
-        return $this->render('index');
+        $behaviors = parent::behaviors();
+
+        // Forçar JSON (desativa XML)
+        $behaviors['contentNegotiator'] = [
+            'class' => ContentNegotiator::class,
+            'formats' => [
+                'application/json' => Response::FORMAT_JSON,
+            ],
+        ];
+
+        return $behaviors;
     }
 }
